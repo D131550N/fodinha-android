@@ -1,4 +1,4 @@
-# Fodinha para Android 🃏
+<img width="3000" height="3000" alt="image" src="https://github.com/user-attachments/assets/350ac9d1-39d0-49a0-8d00-1aed2458619d" /># Fodinha para Android 🃏
 
 Um jogo de cartas multiplayer para Android, focado na dinâmica do jogo **Fodinha** (também conhecido em algumas regiões como *Oh Hell* adaptado com baralho espanhol). 
 
@@ -15,7 +15,7 @@ A mecânica principal do jogo foi reescrita para acomodar as regras da Fodinha:
 ## ⚖️ Força das Cartas e Manilhas
 
 O jogo utiliza o baralho espanhol com a seguinte ordem de força (da mais fraca para a mais forte):
-`4, 5, 6, 7, Q(11), J(10), K(12), 1, 2, 3`
+`4, 5, 6, 7, 10, 11, 12, 1, 2, 3`
 
 **Manilhas (Desempate):**
 Cartas comuns empardam o jogo, mas as manilhas seguem a ordem de naipes para desempate:
