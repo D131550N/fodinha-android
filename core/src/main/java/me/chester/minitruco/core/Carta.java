@@ -1,87 +1,43 @@
 package me.chester.minitruco.core;
 
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright © 2005-2023 Carlos Duarte do Nascimento "Chester" <cd@pobox.com> */
+/* Modificado para o jogo Fodinha */
 
 /**
- * Representa uma carta do truco.
+ * Representa uma carta do jogo.
  * <p>
- * É importante que ela não tenha qualquer referência a, Partida, Jogador, etc.,
- * pois é passada para <code>Estrategia</code> por meio de <code>SituacaoJogo</code>.
+ * Mantém a estrutura de comunicação, mas com a lógica de força 
+ * reescrita para as regras da Fodinha.
  */
 public class Carta {
 
-    /**
-     * Cria uma carta com letra e naipe definidos
-     */
     public Carta(char letra, int naipe) {
         setLetra(letra);
         setNaipe(naipe);
     }
 
-    /**
-     * Cria uma carta baseado em sua representação string
-     *
-     * @param sCarta
-     *            letra e naipe da carta, conforme retornado por
-     *            <code>toString()</code>
-     * @see Carta#toString()
-     */
     public Carta(String sCarta) {
         this(sCarta.charAt(0), "coepx".indexOf(sCarta.charAt(1)));
     }
 
-    /**
-     * Constante que representa o naipe de copas
-     */
     public static final int NAIPE_COPAS = 0;
-
-    /**
-     * Constante que representa o naipe de ouros
-     */
     public static final int NAIPE_OUROS = 1;
-
-    /**
-     * Constante que representa o naipe de espadas
-     */
     public static final int NAIPE_ESPADAS = 2;
-
-    /**
-     * Constante que representa o naipe de paus
-     */
     public static final int NAIPE_PAUS = 3;
 
-    /**
-     * Lista ordenada dos naipes
-     */
     public static final int[] NAIPES = { NAIPE_COPAS, NAIPE_ESPADAS,
             NAIPE_OUROS, NAIPE_PAUS };
 
-    /**
-     * Indica que o naipe da carta não foi escolhido
-     */
     public static final int NAIPE_NENHUM = 4;
-
-    /**
-     * Indica que a letra da carta não foi escolhida
-     */
     public static final char LETRA_NENHUMA = 'X';
 
-    private static final String LETRAS_VALIDAS = "A23456789JQK";
+    // Removidos o 8 e 9, pois o baralho da Fodinha (espanhol sujo) tem 40 cartas
+    private static final String LETRAS_VALIDAS = "A234567JQK";
 
     private char letra = LETRA_NENHUMA;
-
     private int naipe = NAIPE_NENHUM;
-
     private boolean fechada = false;
 
-    /**
-     * Determina a letra (valor facial) da carta.
-     * <p>
-     * Letras válidas são as da constante LETRAS_VALIDAS. Se a letra for
-     * inválida, a propriedade não é alterda.
-     *
-     */
     public void setLetra(char letra) {
         if (LETRAS_VALIDAS.indexOf(letra) != -1 || letra == LETRA_NENHUMA) {
             this.letra = letra;
@@ -92,14 +48,6 @@ public class Carta {
         return letra;
     }
 
-    /**
-     * Seta o naipe da carta.
-     * <p>
-     * Caso o naipe seja inválido, não é alterado
-     *
-     * @param naipe
-     *            Naipe de acordo com as constantes
-     */
     public void setNaipe(int naipe) {
         if (naipe == NAIPE_COPAS || naipe == NAIPE_OUROS || naipe == NAIPE_PAUS
                 || naipe == NAIPE_ESPADAS || naipe == NAIPE_NENHUM) {
@@ -111,11 +59,6 @@ public class Carta {
         return naipe;
     }
 
-    /**
-     * Determina que uma carta foi jogada como "fechada", e seu valor deve ser
-     * ignorado.
-     *
-     */
     public void setFechada(boolean fechada) {
         this.fechada = fechada;
     }
@@ -124,11 +67,6 @@ public class Carta {
         return fechada;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     public boolean equals(Object outroObjeto) {
         if ((outroObjeto instanceof Carta)) {
             Carta outraCarta = (Carta) outroObjeto;
@@ -138,37 +76,45 @@ public class Carta {
         return false;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     public int hashCode() {
         return getLetra() * 256 + getNaipe();
     }
 
     /**
-     * Retorna um valor de 1 a 14 para esta carta, considerando a manilha
-     *
-     * @param letraManilha
-     *            letra da manilha desta rodada
-     * @return valor que permite comparar duas cartas
+     * LÓGICA DA FODINHA: Retorna a força base da carta para comparação.
+     * Ordem de força: 4, 5, 6, 7, 10(J), 11(Q), 12(K), 1(A), 2, 3
      */
-    public int getValorTruco(char letraManilha) {
-        return Partida.getValorTruco(this, letraManilha);
+    public int getValorFodinha() {
+        switch (this.letra) {
+            case '4': return 1;
+            case '5': return 2;
+            case '6': return 3;
+            case '7': return 4;
+            case 'J': return 5; // Representa o 10 (Sota)
+            case 'Q': return 6; // Representa o 11 (Cavalo)
+            case 'K': return 7; // Representa o 12 (Rei)
+            case 'A': return 8; // Representa o 1 (Ás)
+            case '2': return 9;
+            case '3': return 10;
+            default: return 0;
+        }
     }
 
     /**
-     * Representação em 2 caracteres da carta, formada por letra (em
-     * "A234567QJK") e naipe ([c]opas, [o]uro, [e]spadas,[p]aus ou [x] para
-     * nenhum).
-     * <p>
-     * Esta representação é usada na comunicação cliente-servidor, então não
-     * deve ser alterada (ou, se for, o construtor baseado em caractere deve ser
-     * alterado de acordo).
+     * LÓGICA DA FODINHA: Força do Naipe para critério de desempate.
+     * Ordem de força: Paus (4) > Copas (3) > Espadas (2) > Ouros (1)
      */
+    public int getValorDesempateNaipe() {
+        switch (this.naipe) {
+            case NAIPE_PAUS:    return 4; // Gato / Zap
+            case NAIPE_COPAS:   return 3;
+            case NAIPE_ESPADAS: return 2;
+            case NAIPE_OUROS:   return 1;
+            default: return 0;
+        }
+    }
+
     public String toString() {
         return letra + "" + ("coepx").charAt(naipe);
     }
-
 }
