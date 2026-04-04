@@ -1,72 +1,41 @@
 package me.chester.minitruco.core;
 
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright © 2011 Guilherme Caram <gcaram@gmail.com> */
-/* Copyright © 2005-2023 Carlos Duarte do Nascimento "Chester" <cd@pobox.com> */
+/* Modificado para o jogo Fodinha */
 
 /**
- * Encapsula diferenças de pontuação entre as diferentes modalidades
- * de truco (paulista, mineiro, baralho limpo)
+ * Define as configurações base do jogo.
+ * Como o projeto agora é exclusivo para Fodinha, temos apenas uma regra.
  */
-public interface Modo {
+public class Modo {
 
     /**
-     * @return instância de Modo correspondente ao modoStr
-     * @param modoStr String de 1 caractere indicando o modo desejado. Ex.:
-     *                "M" para mineiro, "P" para paulista, etc.
-     * @throws IllegalArgumentException se o modo for inválido
+     * Retorna a instância do modo Fodinha, ignorando o que vier do Bluetooth antigo.
      */
-    static Modo fromString(String modoStr) {
-        switch (modoStr) {
-            case "M":
-                return new ModoMineiro();
-            case "P":
-                return new ModoPaulista();
-            case "V":
-                return new ModoManilhaVelha();
-            case "L":
-                return new ModoBaralhoLimpo();
-            case "1":
-                return new ModoFinalizaEm1();
-            default:
-                throw new IllegalArgumentException("Modo deve ser M, P, V ou L");
-        }
+    public static Modo fromString(String modoStr) {
+        return new Modo();
     }
 
-    static boolean isModoValido(String modoStr) {
-        try {
-            fromString(modoStr);
-            return true;
-        } catch (IllegalArgumentException e) {
-            return false;
-        }
+    public static boolean isModoValido(String modoStr) {
+        // Aceitamos qualquer conexão, mas sempre forçamos as regras da Fodinha
+        return true;
     }
 
-    static String[] getModosValidos() {
-        return new String[] { "M", "P", "V", "L" };
+    public static String[] getModosValidos() {
+        return new String[] { "F" }; // "F" de Fodinha
     }
 
-    int pontuacaoParaMaoDeX();
-
-    int valorInicialDaMao();
+    /**
+     * @return false, pois a Fodinha sempre joga com baralho sujo (40 cartas)
+     */
+    public boolean isBaralhoLimpo() {
+        return false;
+    }
 
     /**
-     * @return quantos pontos a equipe adversária leva se a equipe
-     *         beneficiária aceitar a mão de X
+     * @return true, pois na Fodinha as manilhas são fixas (sem o "vira")
      */
-    int valorDaMaoDeX();
-
-    /**
-     * @return valor para o qual um partida cujo valor seja valorMao vai se houver um aumento,
-     *         ou 0 se estivermos num valor que não permite aumento (ex.: 12 no truco paulista)
-     */
-    int valorSeHouverAumento(int valorMao);
-
-    boolean isBaralhoLimpo();
-
-    /**
-     * @return True para manilhas fixas (sem "vira")
-     */
-    boolean isManilhaVelha();
-
+    public boolean isManilhaVelha() {
+        return true;
+    }
 }
