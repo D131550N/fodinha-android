@@ -1,41 +1,39 @@
-# miniTruco Android
+# Fodinha para Android 🃏
 
-[<img alt="screenshot do jogo" align="right" src="docs/screenshots/screenshot-readme.png" />](docs/screenshots/screenshot-readme-large.png)
+Um jogo de cartas multiplayer para Android, focado na dinâmica do jogo **Fodinha** (também conhecido em algumas regiões como *Oh Hell* adaptado com baralho espanhol). 
 
-O miniTruco é um jogo de truco para celulares, tablets e outros dispositivos Android.
+Este projeto é um *fork* modificado do excelente [minitruco-android](https://github.com/chesterbr/minitruco-android), criado originalmente por Carlos Duarte do Nascimento (Chester).
 
-Ele é completamente gratuito, sem anúncios, leve e não precisa de internet para jogar sozinho (ou em até quatro pessoas, via Bluetooth ou internet).
+## 📌 O que muda em relação ao Minitruco?
 
-O jogo suporta as variantes mais comuns do truco (paulista e mineiro), com opções para jogar com baralho limpo ou manilha velha. Ele se adapta a diferentes formatos, orientações e resoluções de tela e permite configurar diversos aspectos visuais.
+A mecânica principal do jogo foi reescrita para acomodar as regras da Fodinha:
+- **Modo Free-For-All:** Cada um por si, sem equipes. Suporta até 6 jogadores simultâneos via Bluetooth.
+- **Fase de Palpites:** Antes de jogar as cartas, cada jogador deve declarar quantas rodadas vai "fazer".
+- **Dinâmica de Cartas:** A primeira rodada começa com 1 carta para cada jogador, a segunda com 2 cartas, e assim sucessivamente até alguém perder todas as vidas.
+- **Sistema de Vidas:** Os jogadores começam com 2 vidas. Quem não cumpre o palpite feito no início da rodada, perde uma vida.
 
-<p align="center">
-<a href="https://play.google.com/store/apps/details?id=me.chester.minitruco&pli=1&hl=pt"><img src="docs/assets/disponivel-google-play-badge.png" alt="versão oficial no Google Play" align="middle"/></a>
-</p>
-<p align="center">
-<a href="https://github.com/chesterbr/minitruco-android/actions"><img src="https://github.com/chesterbr/minitruco-android/actions/workflows/gradle.yml/badge.svg?branch=main" alt="status dos testes" align="middle" /></a>
-</p>
+## ⚖️ Força das Cartas e Manilhas
 
-É um software livre, sem fins lucrativos, desenvolvido por hobby e com :heart: no meu tempo pessoal (com valiosas colaborações de outras pessoas).
+O jogo utiliza o baralho espanhol com a seguinte ordem de força (da mais fraca para a mais forte):
+`4, 5, 6, 7, Q(11), J(10), K(12), 1, 2, 3`
 
-Você pode usar e modificar o código como quiser, dentro dos [termos da licença BSD](LICENSE). Consulte a **[documentação para desenvolvimento](docs/documentacao-para-desenvolvimento.md)** para saber mais sobre o funcionamento e como contribuir.
+**Manilhas (Desempate):**
+Cartas comuns empardam o jogo, mas as manilhas seguem a ordem de naipes para desempate:
+1. Paus (Gato/Zap) ♣️ - *Mais forte*
+2. Copas ♥️
+3. Espadas ♠️
+4. Ouros ♦️ - *Mais fraca*
 
-## Créditos
+## 🛠️ Como rodar o projeto
 
-**[Carlos Duarte do Nascimento](https://chester.me/sobre)** ([@chesterbr](https://github.com/chesterbr)): idéia, desenvolvimento, manutenção e artes diversas.
+1. Faça o clone deste repositório: `git clone https://github.com/D131550N/nome-do-seu-repo.git`
+2. Abra o projeto no **Android Studio**.
+3. Aguarde o Gradle sincronizar as dependências.
+4. Compile e rode no seu emulador ou dispositivo físico via USB.
 
-### Colaborações em uso
+## 🤝 Créditos e Agradecimentos
 
-- **[Acturko](https://www.fiverr.com/acturko)**: baralhos em estilo tradicional
-- **[Leonardo Sellani](https://www.linkedin.com/in/leonardosellani/)**: estratégia de bot
-- **[Rodolfo Vasconcelos](https://www.linkedin.com/in/rodolfo-de-andrade-vasconcelos/)**: seleção manual de servidor Bluetooth
-- **[Sandro Gasparoto](https://www.linkedin.com/in/sgasparoto/)**: estratégia de bot
-- **[Vanessa Sabino](https://baniverso.com)** ([@bani](https://github.com/bani)): logotipo, cartas e baralho [Android](https://www.digitaltrends.com/mobile/who-is-bugdroid-the-story-of-androids-mascot/)
+Este projeto só foi possível graças ao código aberto do **Minitruco**, desenvolvido por [chesterbr](https://github.com/chesterbr/minitruco-android). A estrutura de UI, renderização de cartas e comunicação Bluetooth foram herdadas deste projeto fantástico.
 
-### Colaborações anteriores
-
-- **[Guilherme Caram](https://www.linkedin.com/in/guilherme-caram-meireles/)** ([@gcaram](https://github.com/gcaram)): tento mineiro original
-- **[Willian Gigliotti](https://www.linkedin.com/in/willian-gigliotti/)**: estratégia de bot
-
-### Software de terceiros
-
-- [Color Picker](https://github.com/jaredrummler/ColorPicker) © 2016 Jared Rummler / © 2015 Daniel Nilsson. Licensed under the [Apache License, Version 2.0](https://github.com/jaredrummler/ColorPicker/blob/master/LICENSE).
+---
+Desenvolvido com ☕ por Dieisson.
