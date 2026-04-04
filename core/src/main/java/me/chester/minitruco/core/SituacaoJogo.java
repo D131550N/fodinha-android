@@ -1,105 +1,81 @@
 package me.chester.minitruco.core;
 
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright © 2005-2023 Carlos Duarte do Nascimento "Chester" <cd@pobox.com> */
+/* Modificado para o jogo Fodinha */
 
 /**
- * Fotografia da situação atual da partida no momento em que um bot vai jogar,
- * responder a um aumento ou decidir se joga uma mão de 10/11.
- * <p>
- * Ela garante que a estratégia não trapaceie, disponibilizando apenas o que
- * o bot vê: cartas na mão, histórico de cartas jogadas, placares da mão e
- * da partida, etc. A única classe do truco que ela enxerga é <code>Carta</code>.
+ * Representa o estado da partida em um determinado momento.
+ * Na Fodinha, isso inclui saber a quantidade de cartas da rodada,
+ * em qual fase estamos (palpites ou cartas), as vidas e quantas
+ * rodadas cada jogador prometeu fazer.
  */
 public class SituacaoJogo {
 
-    @Override
-    public String toString() {
-        return "pos:" + posJogador + ",pontos:" + pontosEquipe[0] + ","
-                + pontosEquipe[1] + ",rodada:" + numRodadaAtual + ",results:"
-                + resultadoRodada[0] + "," + resultadoRodada[1] + ","
-                + resultadoRodada[2] + ",valMao:" + valorMao;
-    }
+    /**
+     * Fase atual do jogo.
+     * 0 = Aguardando / Distribuindo cartas
+     * 1 = Fase de Palpites (dizendo quantas vai fazer)
+     * 2 = Fase de Jogo (jogando as cartas na mesa)
+     */
+    public int faseJogo;
 
     /**
-     * Posição do jogador. 1 e 3 são parceiros entre si, assim como 2 e 4, e
-     * jogam na ordem numérica.
+     * Quantidade total de jogadores na mesa (de 2 a 6)
+     */
+    public int numJogadores;
+
+    /**
+     * Posição do jogador que está recebendo esta situação (1 a numJogadores).
      */
     public int posJogador;
 
     /**
-     * Rodada que estamos jogando (de 1 a 3)
+     * Posição do jogador cuja vez é a atual.
      */
-    public int numRodadaAtual;
+    public int vez;
 
     /**
-     * Resultados de cada rodada (1 para vitória da equipe 1/3, 2 para vitória
-     * da equipe 2/4 e 3 para empate)
+     * Quantas cartas cada jogador recebeu nesta rodada (1, 2, 3...)
      */
-    public final int[] resultadoRodada = new int[3];
+    public int quantidadeCartasRodada;
 
     /**
-     * Valor atual da mão (1, 3, 6, 9 ou 12)
+     * Array com as vidas de cada jogador.
+     * O índice 0 é ignorado para facilitar o mapeamento das posições (1 a 6).
+     * Ex: vidas[1] = vidas do jogador 1.
      */
-    public int valorMao;
+    public int[] vidas = new int[7];
 
     /**
-     * Valor da mão caso o jogador peça aumento de aposta (se for 0, significa
-     * que não pode ser pedido aumento)
+     * Array com os palpites (quantas rodadas o jogador disse que faria).
      */
-    public int valorProximaAposta;
+    public int[] palpites = new int[7];
 
     /**
-     * Jogador que está pedindo aumento de aposta (pedindo truco, 6, 9 ou 12).
-     * Se for null, ninguém está pedindo
+     * Array com a quantidade de rodadas que o jogador efetivamente já ganhou nesta mão.
      */
-    public int posJogadorPedindoAumento;
+    public int[] feitas = new int[7];
 
     /**
-     * Posição (1 a 4) do do jogador que abriu a rodada
+     * Array com as cartas que estão atualmente na mesa.
      */
-    public int posJogadorQueAbriuRodada;
+    public Carta[] cartasJogadas = new Carta[7];
 
     /**
-     * Letra da manilha (quando aplicável).
-     * <p>
-     * Esta propriedade deve ser usada APENAS para chamar o método
-     * Partida.getValorTruco(), pois, no caso de partida com manilha velha, seu valor
-     * não é o de uma carta
+     * Indica se um jogador específico já foi eliminado (zerou as vidas).
      */
-    public char manilha;
+    public boolean[] eliminado = new boolean[7];
 
     /**
-     * Valor que a proprieade manilha assume quando estamos jogando com manilha
-     * velha (não-fixa)
+     * Retorna a quantidade de jogadores que ainda estão vivos no jogo.
      */
-    public static final char MANILHA_VELHA = 'X';
-
-    /**
-     * Pontos de cada equipe na partida
-     */
-    public final int[] pontosEquipe = new int[2];
-
-    /**
-     * Para cada rodada (0-2) dá as cartas jogadas pelas 4 posicões (0-3)
-     */
-    public final Carta[][] cartasJogadas = new Carta[3][4];
-
-    /**
-     * Cartas que ainda estão na mão do jogador
-     */
-    public Carta[] cartasJogador;
-
-    /**
-     * Determina se o baralho inclui as cartas 4, 5, 6 e 7 (true) ou não
-     * (false).
-     * <p>
-     */
-    public boolean baralhoSujo;
-
-    /**
-     * Informa se vale jogar carta fechada
-     */
-    public boolean podeFechada;
-
+    public int getJogadoresVivos() {
+        int vivos = 0;
+        for (int i = 1; i <= numJogadores; i++) {
+            if (!eliminado[i]) {
+                vivos++;
+            }
+        }
+        return vivos;
+    }
 }
