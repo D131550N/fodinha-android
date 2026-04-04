@@ -1,4 +1,4 @@
-<img width="3000" height="3000" alt="image" src="https://github.com/user-attachments/assets/350ac9d1-39d0-49a0-8d00-1aed2458619d" /># Fodinha para Android 🃏
+# Fodinha para Android 🃏
 
 Um jogo de cartas multiplayer para Android, focado na dinâmica do jogo **Fodinha** (também conhecido em algumas regiões como *Oh Hell* adaptado com baralho espanhol). 
 
