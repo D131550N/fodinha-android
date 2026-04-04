@@ -1,7 +1,7 @@
 package me.chester.minitruco.core;
 
 /* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright © 2005-2023 Carlos Duarte do Nascimento "Chester" <cd@pobox.com> */
+/* Modificado para o jogo Fodinha */
 
 import java.util.Random;
 import java.util.Vector;
@@ -12,35 +12,27 @@ import java.util.Vector;
  */
 public class Baralho {
 
-    private final boolean limpo;
-
     private final Random random = new Random();
 
     private Vector<Carta> sorteadas = new Vector<>();
 
     /**
-     * Cria um novo bararalho de truco
-     *
-     * @param limpo true se o baralho for limpo (sem 4, 5, 6 e 7)
+     * Cria um novo baralho para a Fodinha (sempre 40 cartas).
      */
-
-    public Baralho(boolean limpo) {
-        this.limpo = limpo;
+    public Baralho() {
     }
 
     /**
      * Sorteia uma carta do baralho.
      * <p>
-     * O método não verifica se o baralho foi inteiramente sorteado. Para truco não há
-     * problema, mas outros jogos podem eventualmente retornar um null nesse
-     * caso.
+     * O método garante que a carta não foi sorteada previamente nesta mão.
      *
      * @return carta sorteada
      */
     public Carta sorteiaCarta() {
-
         Carta c;
-        String cartas = limpo ? "A23JQK" : "A234567JQK";
+        // Na Fodinha, sempre usamos o baralho completo de 40 cartas
+        String cartas = "A234567JQK"; 
         do {
             char letra = cartas.charAt(sorteiaDeZeroA(cartas.length() - 1));
             int naipe = Carta.NAIPES[sorteiaDeZeroA(3)];
@@ -51,14 +43,14 @@ public class Baralho {
     }
 
     /**
-     * Recolhe as cartas do baralho, zerando-o para um novo uso
+     * Recolhe as cartas do baralho, zerando-o para um novo uso na próxima rodada.
      */
     public void embaralha() {
         sorteadas = new Vector<>();
     }
 
     /**
-     * Sortea numeros entre 0 e um valor especificado, inclusive
+     * Sorteia números entre 0 e um valor especificado, inclusive
      */
     private int sorteiaDeZeroA(int limiteSuperior) {
         return (random.nextInt(limiteSuperior + 1));
@@ -67,11 +59,9 @@ public class Baralho {
     /**
      * Tira uma carta do baralho, evitando que ela seja sorteada
      *
-     * @param c
-     *            Carta a retirar
+     * @param c Carta a retirar
      */
     public void tiraDoBaralho(Carta c) {
         sorteadas.addElement(c);
     }
-
 }
