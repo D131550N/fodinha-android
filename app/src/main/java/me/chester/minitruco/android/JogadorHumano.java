@@ -1,32 +1,26 @@
 package me.chester.minitruco.android;
 
+/* SPDX-License-Identifier: BSD-3-Clause */
+/* Modificado para o jogo Fodinha */
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import me.chester.minitruco.core.Carta;
 import me.chester.minitruco.core.Jogador;
 import me.chester.minitruco.core.Partida;
-import me.chester.minitruco.core.PartidaLocal;
-
-/* SPDX-License-Identifier: BSD-3-Clause */
-/* Copyright © 2005-2023 Carlos Duarte do Nascimento "Chester" <cd@pobox.com> */
 
 /**
- * Jogador que controla o celular.
- * <p>
- * Esta classe trabalha em conjunto com uma <code>TrucoActivity</code> e uma
- * <code>MesaView</code>, que mostram a partida ao usuário, capturam seu input e
- * executam as jogadas.
+ * Jogador que controla o celular na camada Android.
+ * Trabalha em conjunto com TrucoActivity e MesaView para exibir o jogo
+ * e receber toques na tela e inputs do usuário.
  */
 public class JogadorHumano extends me.chester.minitruco.core.JogadorHumano {
 
     private final static Logger LOGGER = Logger.getLogger("JogadorHumano");
 
     private final TrucoActivity activity;
-
     private final MesaView mesa;
-
-    int valorProximaAposta;
 
     public JogadorHumano(TrucoActivity activity, MesaView mesa) {
         this.activity = activity;
@@ -35,61 +29,34 @@ public class JogadorHumano extends me.chester.minitruco.core.JogadorHumano {
 
     @Override
     public void cartaJogada(Jogador j, Carta c) {
-        mesa.escondePergunta();
         mesa.setPosicaoVez(0);
-        mesa.escondeBotaoAumento();
-        mesa.escondeBotaoAbertaFechada();
         mesa.descarta(c, posicaoNaTela(j));
-        LOGGER.log(Level.INFO, "Jogador na posicao de tela " + posicaoNaTela(j)
-                + " jogou " + c);
-    }
-
-    @Override
-    public void decidiuMaoDeX(Jogador j, boolean aceita, int rndFrase) {
-        if (posicaoNaTela(j) == 3 && aceita) {
-            mesa.escondePergunta();
-        }
-        if (aceita) {
-            activity.setValorMao(partida.getModo().valorDaMaoDeX());
-        }
-        mesa.diz(aceita ? "mao_de_x_sim" : "mao_de_x_nao", posicaoNaTela(j), 1500, rndFrase);
+        LOGGER.log(Level.INFO, "Jogador na posicao de tela " + posicaoNaTela(j) + " jogou " + c);
     }
 
     @Override
     public void entrouNoJogo(Jogador j, Partida p) {
-
-    }
-
-    @Override
-    public void informaMaoDeX(Carta[] cartasParceiro) {
-        mesa.maoDeX(cartasParceiro);
+        // Sem ação necessária por enquanto
     }
 
     @Override
     public void inicioMao(Jogador jogadorQueAbre) {
-        valorProximaAposta = 3;
-        for (int rodada = 1; rodada <= 3; rodada++) {
-            activity.setResultadoRodada(rodada, 0);
-        }
-        LOGGER.log(Level.INFO, "distribuindo a mão");
+        LOGGER.log(Level.INFO, "Distribuindo a mão");
         mesa.distribuiMao();
-        activity.setValorMao(partida.getModo().valorInicialDaMao());
         mesa.setPosicaoVez(posicaoNaTela(jogadorQueAbre));
         activity.tiraDestaqueDoPlacar();
     }
 
     @Override
-    public void inicioPartida(int placarEquipe1, int placarEquipe2) {
-        activity.placar[0] = placarEquipe1;
-        activity.placar[1] = placarEquipe2;
-        activity.atualizaPlacar(placarEquipe1, placarEquipe2);
+    public void inicioPartida(int dummy1, int dummy2) {
+        // A Fodinha usa as "Vidas" guardadas no SituacaoJogo e não placar de equipes
+        activity.atualizaVidasNaTela(); 
     }
 
     @Override
     public void jogoAbortado(int posicao, int rndFrase) {
         if (posicao != 0 && mesa != null) {
-            mesa.diz("abortou", convertePosicaoJogadorParaPosicaoTela(posicao),
-                    1000, rndFrase);
+            mesa.diz("abortou", convertePosicaoJogadorParaPosicaoTela(posicao), 1000, rndFrase);
             mesa.aguardaFimAnimacoes();
         }
         if (activity != null) {
@@ -99,115 +66,53 @@ public class JogadorHumano extends me.chester.minitruco.core.JogadorHumano {
     }
 
     @Override
-    public void jogoFechado(int numEquipeVencedora, int rndFrase) {
-        boolean ganhei = (numEquipeVencedora == this.getEquipe());
+    public void jogoFechado(int numVencedor, int rndFrase) {
+        // A Fodinha é free-for-all. Ganhei se o numVencedor for a minha posição no Core
+        boolean ganhei = (numVencedor == this.getPosicao());
         mesa.diz(ganhei ? "vitoria" : "derrota", 1, 1000, rndFrase);
         mesa.aguardaFimAnimacoes();
-        activity.jogoFechado(numEquipeVencedora);
+        activity.jogoFechado(numVencedor);
     }
 
     @Override
-    public void maoFechada(int[] pontosEquipe) {
-        int pontosNos = pontosEquipe[getEquipe() - 1];
-        int pontosRivais = pontosEquipe[getEquipeAdversaria() - 1];
-        activity.atualizaPlacar(pontosNos, pontosRivais);
-        activity.setValorMao(0);
-        mesa.escondeBotaoAumento();
-        mesa.escondeBotaoAbertaFechada();
-        mesa.setPosicaoVez(0);
-        mesa.recolheMao();
-    }
-
-    @Override
-    public void pediuAumentoAposta(Jogador j, int valor, int rndFrase) {
-        LOGGER.log(Level.INFO, "pedindo para mostrar pergunta aumento");
-        mesa.pedeAumento(posicaoNaTela(j), valor, rndFrase);
-    }
-
-    @Override
-    public void aceitouAumentoAposta(Jogador j, int valor, int rndFrase) {
-        if (j.getEquipe() == this.getEquipe()) {
-            // Numa partida sem bluetooth/etc, o bot não aumenta, só
-            // sinaliza a intenção de aumentar
-            if (partida instanceof PartidaLocal && ((PartidaLocal) partida).isIgnoraDecisao(j)) {
-                mesa.diz("aumento_quero", posicaoNaTela(j), 1500, rndFrase);
-                return;
-            }
-            // Nós aceitamos um truco, então podemos pedir aumento (se o valor atual ainda permitir)
-            valorProximaAposta = partida.getModo().valorSeHouverAumento(valor);
-        } else {
-            // Eles aceitaram um truco, temos que esperar eles pedirem
-            valorProximaAposta = 0;
-        }
-        mesa.escondePergunta();
-        mesa.diz("aumento_sim", posicaoNaTela(j), 1500, rndFrase);
-        mesa.aceitouAumentoAposta();
-        activity.setValorMao(valor);
-    }
-
-    @Override
-    public void recusouAumentoAposta(Jogador j, int rndFrase) {
-        mesa.diz("aumento_nao", posicaoNaTela(j), 1300, rndFrase);
-    }
-
-    @Override
-    public void rodadaFechada(int numRodada, int resultado,
-            Jogador jogadorQueTorna) {
-        if (getEquipe() == 2) {
-            // Se o humano nao é equipe 1 e não for empate, troca o resultado
-            if (resultado == 1) {
-                resultado = 2;
-            } else if (resultado == 2) {
-                resultado = 1;
-            }
-        }
-        mesa.escondePergunta();
-        mesa.setPosicaoVez(0);
-        mesa.atualizaResultadoRodada(numRodada, resultado, jogadorQueTorna);
-    }
-
-    @Override
-    public void vez(Jogador j, boolean podeFechada) {
-        LOGGER.log(Level.INFO, "vez do jogador " + posicaoNaTela(j));
-        mesa.escondeBotaoAumento();
-        mesa.escondeBotaoAbertaFechada();
+    public void vez(Jogador j, boolean isFasePalpite) {
+        LOGGER.log(Level.INFO, "Vez do jogador tela: " + posicaoNaTela(j));
+        
+        // Se for a vez do jogador humano do celular...
         if (j.equals(this)) {
-            if ((valorProximaAposta > 0) && partida.isPlacarPermiteAumento()) {
-                mesa.mostraBotaoAumento(valorProximaAposta);
+            if (isFasePalpite) {
+                // Se a mesa pede palpite, mandamos a Activity abrir o pop-up
+                activity.pedePalpite();
+            } else {
+                // Se a mesa pede carta, destrava o toque na tela
+                mesa.vez(true);
             }
-            if (podeFechada) {
-                mesa.mostraBotaoAbertaFechada();
-            }
+        } else {
+            // Se for vez de outro, trava o toque para o humano
+            mesa.vez(false);
         }
-        mesa.vez(j.equals(this));
+        
         mesa.setPosicaoVez(posicaoNaTela(j));
     }
 
     /**
-     * Retorna a posição do jogador na tela.
-     * <p>
-     * Num partida local, o 1 é o humano *e* a posição inferior da tela. Em jogos
-     * remotos, o jogador 1 pode não ser o inferior, e esta função calcula a
-     * posição que aquele jogador ocupa na tela sob o ponto de vista local.
-     * <p>
+     * Retorna a posição do jogador na tela (convertendo de 1-6 para o formato circular).
+     * O Jogador humano do celular (este objeto) sempre senta na posição 1 da TELA (embaixo).
      *
-     * @return 1 para a posição inferior, 2 para a direita, 3 para cima, 4 para
-     *         esquerda
+     * @return 1 (Inferior), 2 (Dir Baixo), 3 (Dir Cima), 4 (Topo), 5 (Esq Cima), 6 (Esq Baixo)
      */
-    private int posicaoNaTela(Jogador j) {
-        int pos = j.getPosicao() - this.getPosicao() + 1;
+    public int posicaoNaTela(Jogador j) {
+        return convertePosicaoJogadorParaPosicaoTela(j.getPosicao());
+    }
+
+    private int convertePosicaoJogadorParaPosicaoTela(int posicaoJogadorCore) {
+        // Pegamos o total de jogadores direto da Partida
+        int totalMesa = partida != null ? partida.getJogadoresVivos() : 6; 
+        
+        int pos = posicaoJogadorCore - this.getPosicao() + 1;
         if (pos < 1) {
-            pos = pos + 4;
+            pos = pos + 6; // Ajustado para mesa de até 6
         }
         return pos;
     }
-
-    private int convertePosicaoJogadorParaPosicaoTela(int posicaoJogador) {
-        int pos = posicaoJogador - this.getPosicao() + 1;
-        if (pos < 1) {
-            pos = pos + 4;
-        }
-        return pos;
-    }
-
 }
