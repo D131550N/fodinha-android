@@ -1,222 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">miniTruco</string>
-    <string name="botao_aumento_truco">Truco</string>
-    <string name="botao_aumento_seis">Seis</string>
-    <string name="botao_aumento_nove">NOVE!</string>
-    <string name="botao_aumento_dez">DEZ!</string>
-    <string name="botao_aumento_doze">DOZE!!!</string>
-    <string-array name="balao_aumento_truco">
-        <item>Truco!</item>
-        <item>Truco ladrão!</item>
-        <item>É truco mesmo!</item>
-        <item>Truuuco!</item>
-        <item>Truco na cabeça!</item>
-        <item>É truco!</item>
-        <item>Truco marreco!</item>
-        <item>Truquei e tá trucado!</item>
-        <item>Truco! Pede seis!</item>
-    </string-array>
-    <string-array name="balao_aumento_seis">
-        <item>Seis!</item>
-        <item>Meio-pau!</item>
-        <item>Meio-saco!</item>
-        <item>Meia-vara!</item>
-        <item>Meia-arroba!</item>
-        <item>Seeeeeis!</item>
-        <item>Seeeeis na lata!</item>
-        <item>Toma seis!</item>
-        <item>SEEEEEEEEIS</item>
-    </string-array>
-    <string-array name="balao_aumento_nove">
-        <item>Nove!</item>
-        <item>Nooooove!</item>
-        <item>É nove, é NOVE!</item>
-        <item>Nove na cabeça!</item>
-        <item>Ah, vem pra nove!</item>
-        <item>É nove!</item>
-    </string-array>
-    <string-array name="balao_aumento_dez">
-        <item>Dez!</item>
-        <item>Deeeeeez!</item>
-        <item>Dez na cabeça!</item>
-        <item>Ah, vem pra dez!</item>
-        <item>É deis-zão!</item>
-    </string-array>
-    <string-array name="balao_aumento_doze">
-        <item>Doze!</item>
-        <item>DOOOOZEEEEE!</item>
-        <item>Doze pra acabar!</item>
-        <item>É doze!</item>
-        <item>Doze sem piedade!</item>
-        <item>Jogo!</item>
-    </string-array>
-    <string-array name="balao_aumento_sim">
-        <item>Desce!</item>
-        <item>Manda bala!</item>
-        <item>Vamos nessa!</item>
-        <item>Cai.</item>
-        <item>Vem que tem!</item>
-        <item>Manda.</item>
-        <item>É facão, quero ver!</item>
-        <item>Vamos ver.</item>
-        <item>Aceito.</item>
-        <item>Quero ver.</item>
-        <item>Desce ladrão!</item>
-    </string-array>
-    <string-array name="balao_aumento_nao">
-        <item>Tô fora.</item>
-        <item>Não quero.</item>
-        <item>Não.</item>
-        <item>Esquece.</item>
-        <item>Tá louco? Não!</item>
-        <item>Nem a pau.</item>
-        <item>Só porque você quer.</item>
-        <item>Nem pensar.</item>
-    </string-array>
-    <string-array name="balao_aumento_quero">
-        <item>Eu topo, e você?</item>
-        <item>Vamo lá, parça?</item>
-        <item>Pras cabeça, chefia?</item>
-    </string-array>
+    <!-- Nome do App (Como vai aparecer no celular e nas configurações) -->
+    <string name="app_name">Fodinha</string>
+
+    <!-- Frases dos Bots (Edição Pica-Pau) -->
     <string-array name="balao_vitoria">
-        <item>Foi fácil demais!!!</item>
+        <item>E lá vamos nós!</item>
+        <item>Em todos esses anos nessa indústria vital, essa é a primeira vez que isso me acontece!</item>
+        <item>Mais um bobo!</item>
         <item>Toooooomem!</item>
-        <item>Que lavada!</item>
-        <item>Volta pra casa!</item>
-        <item>Toma marreco!</item>
     </string-array>
+
     <string-array name="balao_derrota">
-        <item>Maldição!</item>
-        <item>Nem queria ganhar…</item>
-        <item>A próxima é nossa.</item>
+        <item>Fui tapeado!</item>
+        <item>Vodu é pra jacu!</item>
+        <item>Minha nossa! Nossa nossa nossa!</item>
+        <item>Essa é a minha cara de quem se importa...</item>
         <item>Raios!</item>
     </string-array>
-    <string-array name="balao_mao_de_x_sim">
-        <item>Vamos jogar!</item>
-        <item>Vamos nessa!</item>
-        <item>Tô dentro.</item>
-    </string-array>
-    <string-array name="balao_mao_de_x_nao">
-        <item>Não quero.</item>
-        <item>Que lixo!</item>
-        <item>Não.</item>
-        <item>Nem pensar.</item>
-        <item>Tô fora.</item>
-        <item>Sai fora.</item>
-        <item>Nem, manda outras.</item>
-    </string-array>
+
     <string-array name="balao_abortou">
+        <item>Adeus, Tio Paulo!</item>
+        <item>Eu vou pular o barril!</item>
         <item>Tchau…</item>
-        <item>Cansei</item>
     </string-array>
 
-    <string name="titulo_instrucoes">Instruções</string>
+    <string name="titulo_instrucoes">Regras da Fodinha</string>
     <string name="texto_instrucoes"><![CDATA[
+        <b><u>O que é a Fodinha?</u></b><br/>
+        É um jogo de sobrevivência e estratégia. O objetivo não é simplesmente ganhar as rodadas (vazas), mas sim acertar <b>EXATAMENTE</b> quantas rodadas você vai ganhar na mão.<br/><br/>
 
-        <b><u>Regra Geral</u></b>:
-        O miniTruco é jogado por duas duplas (você e mais três "bots" ou amigos), com os parceiros
-        frente a frente. Cada jogador começa com uma \"mão\" de três cartas e, na sua vez, escolhe
-        uma para jogar.
-        <br/><br/>A dupla que jogar a carta de maior valor ganha a rodada, e quem jogar
-        esta carta inicia a rodada seguinte. A \"melhor de três\" encerra a mão e a equipe
-        ganha os pontos daquela mão. O objetivo é fazer a sua dupla alcançar
-        12 pontos antes da dupla adversária.
-        <br/><br/>
-        <b><u>Ordem/valor das cartas</u></b>:
-        Dentre as cartas normais, 4 é a de menor valor, seguida de
-        5, 6, 7, Q, J, K, A, 2, e 3 - a maior de todas. Nas cartas normais, o
-        naipe é indiferente, então, por exemplo, um 6♠ empata com um 6♥, mas perde
-        para qualquer 7.
-        <br/><br/>
-        <b><u>Manilhas</u></b>: Manilhas são quatro cartas especiais, que valem
-        mais que as normais. Os naipes determinam o nome da manilha e seu valor
-        relativo: O pica-fumo
-        (♦) é a menor manilha, seguida da espadilha (♠), da escopeta (♥), e do
-        zap (♣) - este último sendo a maior carta do jogo.
-        <br/><br/>
-        No <b>truco paulista</b>, antes de começar a mão, uma carta é virada,
-        e ela indica qual é o valor das manilhas para aquela mão - é sempre
-        o próximo valor. Por exemplo, se foi virado um 5, as manilhas são
-        6♦, 6♠, 6♥ e 6♣.
-        <br/><br/>
-        Já no <b>truco mineiro</b> não tem \"vira\": os valores das manilhas
-        são fixos (a chamada \"manilha velha\"), então elas são sempre: 7♦, A♠, 7♥, e 4♣.
-        <br/><br/>
-        <b><u>Pontos e Aumentos</u></b>: A mão vale, em princípio 1 ponto no truco
-        paulista e 2 pontos no truco mineiro. Um jogador que acredite ter cartas boas
-        pode pedir \"truco\". Se os dois adversários recusarem, perdem a mão, mas se pelo menos
-        um aceitar, a mão aumenta de valor (3 pontos no truco paulista e 4 no truco mineiro).
-        A partir dali, um adversário pode aumentar a aposta
-        pedindo \"seis\". A coisa se repete para a dupla que trucou, que pode pedir
-        \"oito\" (truco mineiro) ou \"nove\" (paulista), e finalmente os adversários podem
-        pedir \"doze\", aumentando a aposta da mesma forma para estes valores.
-        <br/><br/>
-        <b><u>Empate</u></b>: Se a mão abre com empate, a primeira rodada não-empatada decide ela.
-        Se o empate acontece após a primeira rodada, a mão é de quem ganhou a primeira.
-        <br/><br/><b><u>Mão de 10 (ou 11)</u></b>: Se uma das duplas fizer 10 pontos (no truco mineiro)
-        ou 11 pontos (no truco paulista), seus membros podem ver as cartas do parceiro antes de
-        começar o jogo. Se um deles aceitar jogar, a mão vale o valor do truco. Se os dois recusarem,
-        perdem a rodada (no valor normal), e uma nova mão é distribuída, valendo as mesmas regras.
-        Caso empate 10 a 10 (mineiro) ou 11 a 11 (paulista), o jogo segue normalmente
-        <br/><br/>
-        <b><u>Prioridade Humana</u></b>: No jogo normal (sem ser Bluetooth), você é que decide
-        o aceite dos aumentos e da mão de 11. O parceiro diz se aceitaria o aumento ou não -
-        mas a escolha é sua.
-        <br/><br/>
-        <b><u>Variantes</u></b>: Além dos já mencionados truco pauilsta e truco mineiro (que você
-        seleciona tocando o ícone do mapa de SP ou MG), é possível tocar o ícone do Brasil e
-        selecionar "baralho limpo" (joga sem as cartas 4, 5, 6 e 7) ou "manilha velha" (joga com
-        a manilha do truco mineiro). Estes modos usam os pontos do paulista (mão vale 1, truco 3,
-        aumentos vão a 6, 9 e 12), e não podem ser usados ao mesmo tempo porque algumas das
-        manilhas velhas fazem parte do baralho sujo).
-        <br/><br/>
-        <b><u>Bluetooth</u></b>: Um celular deve criar o jogo, e até três procuram ele. Todos tem
-        que estar com a mesma versão do miniTruco, e é necessário parear os celulares antes.
-        O modo (paulista, mineiro, baralho limpo, manilha velha) é o que estiver configurando no celular que
-        cria o jogo, e este também pode rearranjar as posições antes de começar.
-        <br/><br/>
-        <b><u>Internet</u></b>: Você começa numa sala pública (usando o mesmo modo que usa para jogar
-        normalmmente - paulista, mineiro, etc.), na qual o jogo começa quando entrarem quatro pessoas.
-        Você também pode criar uma sala privada, na qual só é possível entrar com o código, e passar esse
-        código para seus(suas) amigos(as). A sala privada é parecida com o Bluetooth: a pessoa
-        gerente (mais antiga na sala) pode rearranjar as posições, decidir quando começar e as
-        posições vazias são completadas com bots.
-        <br/><br/>
-        <b><u>Diferenças do miniTruco</u></b>: No jogo físico, jogadores podem trucar a qualquer
-        hora; no miniTruco você só truca na sua vez. Não existem sinais (por enquanto), e não é
-        possível entregar o jogo. No jogo normal, qualquer um pode jogar uma carta \"fechada\"
-        (virada para baixo), no miniTruco apenas um integrante da dupla pode fazer isso. O miniTruco
-        não faz a "mão de ferro" (quando o truco mineiro empata em 10x10 ou o paulista em 11x11),
-        na qual se joga sem ver as próprias cartas).
-        <br/><br/>
-        <b><u>Problemas, dúvidas e sugestões</u></b>: O meu e-mail está na tela de título, você pode me
-        escrever, desde que seja de forma educada. Lembre-se que o
-        jogo é inteiramente gratuito e sem publicidade; é algo que eu faço como hobby sem
-        pedir nada em troca. É super válido sugerir melhorias e informar bugs, tanto por e-mail
-        quanto em avaliações na Play Store, mas peço para não penalizar o jogo injustamente (ex.:
-        1 estrela porque o jogo tem um detalhe que você não curtiu).
-        ]]></string>
-    <string name="titulo_sobre">Sobre o miniTruco</string>
-    <string name="texto_sobre"><![CDATA[
-        miniTruco-android: Copyright © 2005-2023 Carlos Duarte do Nascimento (Chester) - cd@pobox.com
-        <br/><br/>Código-fonte e maiores detalhes: https://github.com/chesterbr/minitruco-android
-        <br/><br/>Contribudores(as): Asteras, Guilherme Caram, Leonardo Sellani, Rodolfo Vasconcelos, Sandro Gasparotto, Vanessa Sabino (Bani), Willian Gigliotti.
-        <br/><br/>
-        <br/><br/>Licenciado sob a licença BSD de 3 clausulas (https://opensource.org/licenses/BSD-3-Clause)
-        <br/><br/>Todos os direitos reservados.
-        <br/><br/>A redistribuiçã̃o e o uso nas formas binária e código fonte, com ou sem modificações, são permitidos contanto que as condições abaixo sejam cumpridas:
-        <br/><br/>- Redistribuições do código fonte devem conter o aviso de direitos autorais acima, esta lista de condições e o aviso de isenção de garantias subsequente.
-        <br/><br/>- Redistribuições na forma binária devem reproduzir o aviso de direitos autorais acima, esta lista de condições e o aviso de isenção de garantias subsequente na documentação e/ou materiais fornecidos com a distribuição.
-        <br/><br/>- Nem o nome do detendor dos direitos, nem o nome dos(das) contribuidores(as) podem ser utilizados para endossar ou promover produtos derivados deste software sem autorização prévia específica por escrito.
-        <br/><br/>
-        <br/><br/>Color Picker © 2016 Jared Rummler / © 2015 Daniel Nilsson - Licensed under the Apache License, Version 2.0 (https://github.com/jaredrummler/ColorPicker/blob/master/LICENSE)
+        <b><u>A Dinâmica</u></b><br/>
+        A primeira mão começa com 1 carta para cada jogador. A segunda mão com 2, a terceira com 3, e assim por diante. Após receberem as cartas, cada jogador analisa sua mão e faz um <b>palpite</b> de quantas rodadas acha que vai ganhar.<br/><br/>
+
+        <b><u>A Regra do Último (A Fodinha)</u></b><br/>
+        Para garantir que o jogo seja implacável e alguém sempre perca, o último a dar o palpite é <b>proibido</b> de escolher um número que faça a soma total de palpites da mesa ser igual ao número de cartas distribuídas.<br/><br/>
+
+        <b><u>Vidas</u></b><br/>
+        Os jogadores começam com um número fixo de vidas. Quem acertar o palpite, mantém as vidas. Quem errar (fizer mais ou menos rodadas do que prometeu), perde uma vida. Quem chegar a zero vidas está eliminado! O último sobrevivente vence a partida.<br/><br/>
+
+        <b><u>Força das Cartas e Manilhas</u></b><br/>
+        O jogo utiliza o baralho espanhol (sem 8 e 9). A força normal é: 3, 2, A, K, J, Q, 7, 6, 5, 4.<br/>
+        Uma carta é virada na mesa (o "Vira"). As cartas seguintes a ela tornam-se as Manilhas, sendo as mais fortes do jogo, obedecendo a ordem de naipes: Paus (Zap) > Copas (Copeta) > Espadas (Espadilha) > Ouros (Pica-fumo).
     ]]></string>
-    <string name="jogar_bold"><b>Jogar</b></string>
-    <string name="novidades">
-        <![CDATA[
-            - Bot parceiro usa estratégia mais previsível em jogos locais
-            - Quando alguém sai no meio de um jogo internet, troca a pessoa por bot e continua o jogo
-        ]]>
-    </string>
+
+    <string name="titulo_sobre">Sobre a Fodinha</string>
+    <string name="texto_sobre"><![CDATA[
+        <b>Fodinha v0.0.1 beta</b><br/><br/>
+        Build por Dieisson 👨‍💻<br/>
+        Baseado no Minitruco de Chester.<br/><br/>
+        O miniTruco original é licenciado sob a licença BSD de 3 cláusulas. Todos os direitos originais reservados ao seu criador e contribuidores.<br/>
+        GitHub: https://github.com/chesterbr/minitruco-android
+    ]]></string>
 </resources>

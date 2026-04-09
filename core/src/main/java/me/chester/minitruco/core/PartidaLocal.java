@@ -14,12 +14,11 @@ public class PartidaLocal extends Partida {
 
     private final static Logger LOGGER = Logger.getLogger("PartidaLocal");
 
-    private final Baralho baralho;
     private final boolean jogoAutomatico;
 
     private int posJogadorDaVez;
     private int posJogadorAbriuMao;
-    
+
     // Controle das threads e eventos
     private boolean alguemJogou = false;
     private boolean alguemPalpitou = false;
@@ -32,28 +31,25 @@ public class PartidaLocal extends Partida {
     private int rodadasJogadasNestaMao = 0;
     private Carta[] mesa = new Carta[7]; // Cartas jogadas na mesa (posições 1 a 6)
     private int qtdCartasNaMesa = 0;
+    private char manilha;
+    private int maoAtual = 1;
 
     public PartidaLocal(boolean humanoDecide, boolean jogoAutomatico, String modoStr) {
         super(Modo.fromString(modoStr));
-        this.baralho = new Baralho();
         this.jogoAutomatico = jogoAutomatico;
     }
 
     public void run() {
         LOGGER.log(Level.INFO, "Partida Fodinha iniciada");
-        
-        // Avisa os jogadores que a partida vai começar
+
         for (Jogador interessado : jogadores) {
             if (interessado != null) {
-                // Passamos 0 pros pontos pois não usamos pontos de equipe
                 interessado.inicioPartida(0, 0);
             }
         }
 
-        // O primeiro jogador (posição 1) abre o jogo
         iniciaMao(getProximoVivo(0));
 
-        // Loop principal da máquina de estados
         while (getJogadoresVivos() > 1 && !finalizada) {
             while ((!alguemJogou && !alguemPalpitou) && !finalizada) {
                 sleep();
@@ -71,51 +67,48 @@ public class PartidaLocal extends Partida {
         LOGGER.log(Level.INFO, "Partida Fodinha finalizada");
     }
 
-    /**
-     * Inicia uma nova distribuição de cartas
-     */
     private void iniciaMao(Jogador jogadorQueAbre) {
-        baralho.embaralha();
+        // Criamos um baralho novo com 40 cartas únicas a cada mão!
+        Baralho baralhoDaMao = new Baralho();
+        baralhoDaMao.embaralha();
         rodadasJogadasNestaMao = 0;
-        
-        // Reseta os arrays de controle da mão
+
         for (int i = 1; i <= 6; i++) {
-            palpites[i] = 0;
+            palpites[i] = -1;
             feitas[i] = 0;
             mesa[i] = null;
         }
 
-        // Distribui as cartas de acordo com a quantidade da rodada atual
+        // Sorteia o Vira
+        this.cartaDaMesa = baralhoDaMao.sorteiaCarta();
+        String ordem = "4567JQKA23";
+        int idx = ordem.indexOf(this.cartaDaMesa.getLetra());
+        this.manilha = ordem.charAt(idx == 9 ? 0 : idx + 1);
+
+        // Distribui cartas ÚNICAS para os jogadores
         for (int j = 1; j <= numJogadores; j++) {
             if (!eliminado[j]) {
                 Jogador jogador = getJogador(j);
-                Carta[] cartas = new Carta[quantidadeCartasRodada];
+                Carta[] cartasMao = new Carta[quantidadeCartasRodada];
                 for (int i = 0; i < quantidadeCartasRodada; i++) {
-                    cartas[i] = baralho.sorteiaCarta();
+                    cartasMao[i] = baralhoDaMao.sorteiaCarta(); // Retira do baralho, não repete!
                 }
-                jogador.setCartas(cartas);
+                jogador.setCartas(cartasMao);
             }
         }
 
         posJogadorAbriuMao = jogadorQueAbre.getPosicao();
         posJogadorDaVez = jogadorQueAbre.getPosicao();
-        faseJogo = 1; // Fase de Palpites
+        faseJogo = 1;
 
-        LOGGER.log(Level.INFO, "Abrindo mao com " + quantidadeCartasRodada + " cartas. J" + posJogadorAbriuMao + " começa.");
-
-        // Notifica o início da mão (a interface e os bots precisam saber)
         for (Jogador j : jogadores) {
             if (j != null && !eliminado[j.getPosicao()]) {
                 j.inicioMao(jogadorQueAbre);
             }
         }
-
         notificaVez();
     }
 
-    /**
-     * Retorna o próximo jogador vivo na mesa (pula os eliminados)
-     */
     private Jogador getProximoVivo(int posAtual) {
         int iteracoes = 0;
         int proximo = posAtual;
@@ -125,45 +118,34 @@ public class PartidaLocal extends Partida {
             if (!eliminado[proximo]) return getJogador(proximo);
             iteracoes++;
         }
-        return getJogador(1); // Fallback
+        return getJogador(1);
     }
 
-    /**
-     * Executa a etapa de palpites
-     */
     private void processaPalpite() {
         Jogador j = this.jogadorQueAgiu;
-        
+
         if (j.getPosicao() != posJogadorDaVez || faseJogo != 1) return;
 
         palpites[j.getPosicao()] = this.palpiteFeito;
         LOGGER.log(Level.INFO, "J" + j.getPosicao() + " prometeu fazer " + palpiteFeito);
 
-        // Passa a vez para o próximo vivo
         Jogador proximo = getProximoVivo(posJogadorDaVez);
         posJogadorDaVez = proximo.getPosicao();
 
-        // Se a volta completou e chegou no que abriu a mão, vamos para a Fase de Jogo
         if (posJogadorDaVez == posJogadorAbriuMao) {
-            faseJogo = 2; // Fase de jogar cartas
+            faseJogo = 2; // Libera jogar cartas
             LOGGER.log(Level.INFO, "Fase de palpites encerrada. Iniciando jogadas.");
         }
-        
+
         notificaVez();
     }
 
-    /**
-     * Executa a jogada da carta e avalia quem ganhou
-     */
     private void processaJogada() {
         Jogador j = this.jogadorQueAgiu;
         Carta c = this.cartaJogada;
 
         if (j.getPosicao() != posJogadorDaVez || faseJogo != 2) return;
 
-        LOGGER.log(Level.INFO, "J" + j.getPosicao() + " jogou " + c);
-
-        // Coloca a carta na mesa e notifica os outros
         mesa[j.getPosicao()] = c;
         qtdCartasNaMesa++;
 
@@ -173,67 +155,64 @@ public class PartidaLocal extends Partida {
             }
         }
 
-        // Verifica se todos os vivos já jogaram nesta rodada
         if (qtdCartasNaMesa == getJogadoresVivos()) {
             avaliaGanhadorRodada();
         } else {
-            // Se não, passa a vez pro próximo vivo
             posJogadorDaVez = getProximoVivo(posJogadorDaVez).getPosicao();
             notificaVez();
         }
     }
 
-    /**
-     * Calcula quem ganhou a rodada baseada na Fodinha (Força + Desempate por Naipe)
-     */
+    // --- CALCULADORA DE FORÇA DA FODINHA ---
+    private int calculaForcaFodinha(Carta c) {
+        if (c.getLetra() == this.manilha) {
+            return 11 + c.getNaipe();
+        }
+        String ordem = "4567JQKA23";
+        return ordem.indexOf(c.getLetra()) + 1;
+    }
+
     private void avaliaGanhadorRodada() {
         int vencedor = 0;
         int maiorValor = -1;
-        int naipeDesempate = -1;
+        boolean empardou = false;
 
         for (int i = 1; i <= numJogadores; i++) {
             if (mesa[i] != null) {
-                int valor = mesa[i].getValorFodinha();
-                int naipe = mesa[i].getValorDesempateNaipe();
-                
+                int valor = calculaForcaFodinha(mesa[i]);
+
                 if (valor > maiorValor) {
                     maiorValor = valor;
-                    naipeDesempate = naipe;
                     vencedor = i;
-                } else if (valor == maiorValor) { // Empate de valores, entra a Manilha
-                    if (naipe > naipeDesempate) {
-                        naipeDesempate = naipe;
-                        vencedor = i;
-                    }
+                    empardou = false;
+                } else if (valor == maiorValor) {
+                    empardou = true;
                 }
             }
         }
 
-        LOGGER.log(Level.INFO, "J" + vencedor + " venceu a rodada com a carta " + mesa[vencedor]);
+        if (empardou) {
+            LOGGER.log(Level.INFO, "A rodada EMPARDOU! Ninguém faz.");
+            posJogadorDaVez = vencedor;
+        } else {
+            LOGGER.log(Level.INFO, "J" + vencedor + " venceu a rodada com a carta " + mesa[vencedor]);
+            feitas[vencedor]++;
+            posJogadorDaVez = vencedor;
+        }
 
-        feitas[vencedor]++;
         rodadasJogadasNestaMao++;
-        
-        // Limpa a mesa para a próxima vaza
         qtdCartasNaMesa = 0;
         for (int i = 1; i <= 6; i++) {
             mesa[i] = null;
         }
 
-        // Quem ganha a rodada, joga a primeira na próxima
-        posJogadorDaVez = vencedor;
-
-        // Verifica se acabaram as cartas da mão
         if (rodadasJogadasNestaMao == quantidadeCartasRodada) {
             fechaMao();
         } else {
-            notificaVez(); // Continua a mão
+            notificaVez();
         }
     }
 
-    /**
-     * Verifica quem errou o palpite, tira vidas e avalia se o jogo acabou
-     */
     private void fechaMao() {
         boolean alguemMorreuNestaMao = false;
 
@@ -241,46 +220,28 @@ public class PartidaLocal extends Partida {
             if (!eliminado[i]) {
                 if (palpites[i] != feitas[i]) {
                     vidas[i]--;
-                    LOGGER.log(Level.INFO, "J" + i + " errou o palpite! Vidas restantes: " + vidas[i]);
-                    
                     if (vidas[i] <= 0) {
                         eliminado[i] = true;
                         alguemMorreuNestaMao = true;
-                        LOGGER.log(Level.INFO, "J" + i + " foi ELIMINADO!");
                     }
-                } else {
-                    LOGGER.log(Level.INFO, "J" + i + " acertou o palpite.");
                 }
             }
         }
 
         int vivos = getJogadoresVivos();
-
-        // Se sobrou 1 ou nenhum, acabou o jogo
         if (vivos <= 1) {
             finalizada = true;
-            LOGGER.log(Level.INFO, "Fim de jogo. Sobrou " + vivos + " jogadores.");
-            for (Jogador j : jogadores) {
-                if (j != null) {
-                    j.jogoFechado(1, 0); // Dispara evento de fim de jogo
-                }
-            }
+            for (Jogador j : jogadores) { if (j != null) j.jogoFechado(1, 0); }
             return;
         }
 
-        // Se alguém foi eliminado, as cartas voltam pra 1. Se não, aumentam.
-        if (alguemMorreuNestaMao) {
-            quantidadeCartasRodada = 1;
-        } else {
-            quantidadeCartasRodada++;
-        }
+        if (alguemMorreuNestaMao) quantidadeCartasRodada = 1;
+        else quantidadeCartasRodada++;
 
-        // O próximo a dar as cartas (e abrir a mão) é o seguinte de quem abriu a anterior
+        this.maoAtual++; // <-- Aumenta o número da rodada!
         Jogador proximoAbre = getProximoVivo(posJogadorAbriuMao);
         iniciaMao(proximoAbre);
     }
-
-    // --- RECEPÇÃO DE EVENTOS DOS JOGADORES ---
 
     public synchronized void jogaCarta(Jogador j, Carta c) {
         this.jogadorQueAgiu = j;
@@ -298,37 +259,35 @@ public class PartidaLocal extends Partida {
         Jogador j = getJogador(posJogadorDaVez);
         for (Jogador interessado : jogadores) {
             if (interessado != null && !eliminado[interessado.getPosicao()]) {
-                // Envia as vidas atuais e qual fase o jogo está (Palpite ou Carta)
-                interessado.vez(j, (faseJogo == 1)); 
+                interessado.vez(j, (faseJogo == 1));
             }
         }
     }
 
     public void atualizaSituacao(SituacaoJogo s, Jogador j) {
-        s.faseJogo = this.faseJogo;
-        s.numJogadores = this.numJogadores;
         s.quantidadeCartasRodada = this.quantidadeCartasRodada;
-        s.posJogador = j.getPosicao();
-        s.vez = this.posJogadorDaVez;
+        s.faseJogo = this.faseJogo;
+        s.numeroDaMao = this.maoAtual; // <-- Envia pra tela!
 
         System.arraycopy(this.vidas, 0, s.vidas, 0, 7);
         System.arraycopy(this.palpites, 0, s.palpites, 0, 7);
         System.arraycopy(this.feitas, 0, s.feitas, 0, 7);
         System.arraycopy(this.eliminado, 0, s.eliminado, 0, 7);
-        System.arraycopy(this.mesa, 0, s.cartasJogadas, 0, 7);
     }
 
     public void abandona(int posicao) {
         finalizada = true;
         for (Jogador j : jogadores) {
-            if (j != null) {
-                j.jogoAbortado(posicao, 0);
-            }
+            if (j != null) j.jogoAbortado(posicao, 0);
         }
     }
 
     @Override
     public boolean isJogoAutomatico() {
         return jogoAutomatico;
+    }
+
+    private void sleep() {
+        try { Thread.sleep(100); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
     }
 }

@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import me.chester.minitruco.R;
-import me.chester.minitruco.android.multiplayer.PartidaRemota;
+import me.chester.minitruco.core.JogadorHumano;
 import me.chester.minitruco.core.Partida;
 
 /* SPDX-License-Identifier: BSD-3-Clause */
@@ -52,7 +52,8 @@ public abstract class SalaActivity extends AppCompatActivity {
     protected TextView textViewInstrucoesSalaPrivada;
     protected int posJogador;
     protected String modo;
-    protected PartidaRemota partida;
+    // Removida a variavel PartidaRemota, usando apenas a genérica
+    protected Partida partida;
     protected int numJogadores;
     protected boolean isGerente;
     public String tipoSala;
@@ -98,15 +99,9 @@ public abstract class SalaActivity extends AppCompatActivity {
 
     /**
      * Atualiza a sala com as informações recebidas do servidor.
-     * <p>
-     * Se houver partida em andamento, ela é encerrda (junto com a activity
-     * de jogo).
-     *
-     * @param notificacaoI notificação recebida do servidor com as infos da sala.
      */
     protected void exibeMesaForaDoJogo(String notificacaoI) {
         runOnUiThread(() -> {
-            // Decodifica a notificação, guardando os dados relevantes
             String[] tokens = notificacaoI.split(" ");
             String[] nomes = tokens[1].split(Pattern.quote("|"));
             modo = tokens[2];
@@ -119,14 +114,12 @@ public abstract class SalaActivity extends AppCompatActivity {
                 tipoSala = "PRI";
             }
 
-            // Volta pra mesa (se já não estiver nela)
             encerraTrucoActivity();
             if (partida != null) {
                 partida.abandona(0);
                 partida = null;
             }
 
-            // "bot" é um nome especial, que indica que o jogador é um bot
             numJogadores = 4;
             for (String nome : nomes) {
                 if (nome.equals("bot")) {
@@ -134,15 +127,12 @@ public abstract class SalaActivity extends AppCompatActivity {
                 }
             }
 
-            // Coloca os nomes dos jogadores nas posições corretas, indicando
-            // jogador da vez, gerente, expulsáveis
             for (int i = 1; i <= 4; i++) {
                 String nomeHtml = nomeHtmlParaDisplay(notificacaoI, i);
                 TextView tv = textViewsJogadores[i - 1];
                 tv.setText(Html.fromHtml(nomeHtml));
             }
 
-            // Atualiza outros itens do display
             layoutJogadoresEBotoesGerente.setVisibility(View.VISIBLE);
             findViewById(R.id.layoutBotoesGerente).setVisibility(
                 isGerente && !tipoSala.equals("PUB") ? View.VISIBLE : View.INVISIBLE);
@@ -168,12 +158,9 @@ public abstract class SalaActivity extends AppCompatActivity {
                     textViewInstrucoesSalaPrivada.setVisibility(View.GONE);
                     break;
             }
-            textViewStatus.setText(Partida.textoModo(modo).toLowerCase());
-            // Para atualizar a mensagem, levamos em conta que:
-            // - Salas públicas só iniciam quando estão cheias (e fazem isso
-            //   automaticamente, sem interação do gerente)
-            // - Salas privadas e Bluetooth precisam de pelo menos dois
-            //   jogadores humanos (e o gerente decide quando iniciar)
+            // Forçado para Fodinha já que não existe mais Modo.textoModo()
+            textViewStatus.setText("Fodinha");
+
             setMensagem(null);
             if (tipoSala.equals("PUB")) {
                 if (numJogadores < 4) {
@@ -203,9 +190,9 @@ public abstract class SalaActivity extends AppCompatActivity {
                 return;
             }
             new AlertDialog.Builder(this).setTitle(titulo)
-                    .setMessage(Html.fromHtml(texto))
-                    .setNeutralButton("Ok", (dialog, which) -> {
-                    }).show();
+                .setMessage(Html.fromHtml(texto))
+                .setNeutralButton("Ok", (dialog, which) -> {
+                }).show();
         });
     }
 
@@ -227,41 +214,18 @@ public abstract class SalaActivity extends AppCompatActivity {
             }
             setMensagem(null);
             new AlertDialog.Builder(this)
-                    .setTitle(titulo)
-                    .setMessage(texto)
-                    .setNeutralButton("Fechar", (dialog, which) -> finish())
-                    .setOnCancelListener(v -> finish())
-                    .show();
+                .setTitle(titulo)
+                .setMessage(texto)
+                .setNeutralButton("Fechar", (dialog, which) -> finish())
+                .setOnCancelListener(v -> finish())
+                .show();
         });
     }
 
-    /**
-     * Cria uma nova partida.
-     * <p>
-     * Normalmente é chamado pelo CriadorDePartida, que sabe qual Sala
-     * acionar (e, portanto, qual o tipo de partida apropriado).
-     *
-     * @param jogadorHumano jogador humano que será associado à partida e
-     *                      à activity (para intermediação de eventos)
-     */
     public abstract Partida criaNovaPartida(JogadorHumano jogadorHumano);
 
-    /**
-     * Envia uma linha de texto para a conexão remota.
-     * <p>
-     * Se houver mais de uma, envia para todas.
-     *
-     * @param linha texto a ser enviado.
-     */
     public abstract void enviaLinha(String linha);
 
-    /**
-     * Envia uma linha de texto para uma das conexões remotas (se houver mais
-     * de uma).
-     *
-     * @param linha texto a ser enviado.
-     * @param slot especifica qual das conexões remotas deve receber a mensagem
-     */
     public abstract void enviaLinha(int slot, String linha);
 
     protected void iniciaTrucoActivitySePreciso() {
@@ -289,13 +253,6 @@ public abstract class SalaActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Mostra mensagem permanente em uma caixa no meio da tela.
-     * <p>
-     * Requer layout que contenha textViewMensagem (ex.: sala.xml).
-     *
-     * @param mensagem Mensagem a mostrar, ou null para esconder a caixa
-     */
     protected void setMensagem(String mensagem) {
         runOnUiThread(() -> {
             TextView textViewMensagem = findViewById(R.id.textViewMensagem);

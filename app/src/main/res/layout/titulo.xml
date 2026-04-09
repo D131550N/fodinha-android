@@ -1,248 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="#1B8E3C"
-    android:gravity="center_horizontal"
+    android:gravity="center"
     android:orientation="vertical"
     tools:ignore="RtlSymmetry,HardcodedText,UsingOnClickInXml">
 
-    <GridLayout
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2">
+    <!-- O seu novo Logotipo de Madeira! -->
+    <ImageView
+        android:id="@+id/imgLogoFodinha"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="24dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo_fodinha" />
 
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="logo do miniTruco"
-            android:scaleType="fitCenter"
-            android:src="@drawable/logo" />
-
-    </GridLayout>
-
-    <TableLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:stretchColumns="*">
-
-        <TableRow tools:ignore="UselessParent">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/borda_modo"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:paddingBottom="2dp"
-                    android:text="escolha o modo:"
-                    android:textColor="@android:color/white"
-                    android:textColorLink="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="italic" />
-
-                <LinearLayout
-                    android:layout_width="150sp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/btnModoPaulista"
-                        android:layout_width="50sp"
-                        android:layout_height="50sp"
-                        android:contentDescription="muda para Truco Paulista"
-                        android:onClick="modoButtonClickHandler"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/sp"
-                        android:tag="P" />
-
-                    <ImageButton
-                        android:id="@+id/btnModoMineiro"
-                        android:layout_width="50sp"
-                        android:layout_height="50sp"
-                        android:contentDescription="muda para Truco Mineiro"
-                        android:onClick="modoButtonClickHandler"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/mg"
-                        android:tag="M" />
-
-                    <ImageButton
-                        android:id="@+id/btnModoOutros"
-                        android:layout_width="50sp"
-                        android:layout_height="50sp"
-                        android:contentDescription="muda para outros modos"
-                        android:onClick="modoButtonClickHandler"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/br"
-                        android:tag="outros" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textViewModo"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:paddingBottom="2dp"
-                    android:text="Truco Paulista"
-                    android:textColor="@android:color/white"
-                    android:textColorLink="#000000"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/versao_app"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:autoLink="web"
-                    android:gravity="center"
-                    android:text="versao x.y"
-                    android:textColor="#FFFFFFFF"
-                    android:textColorLink="#FF3F28A4"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:minLines="2"
-                    android:text="feito com ❤️\n por Chester"
-                    android:lines="2"
-                    android:textColorLink="#FF3F28A4"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textViewLinkContato"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="entre em contato"
-                    android:layout_gravity="center"
-                    android:textColor="#FF3F28A4"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?android:attr/selectableItemBackground" />
-            </LinearLayout>
-        </TableRow>
-
-    </TableLayout>
-
+    <!-- Informações de Versão e Créditos -->
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginBottom="48dp">
+
+        <TextView
+            android:id="@+id/versao_app"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fodinha v0.0.1 beta"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Build por Dieisson 👨‍💻\nBaseado no Minitruco de Chester."
+            android:gravity="center"
+            android:textColor="#E0E0E0"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <!-- Botões -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/btnJogar"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:focusedByDefault="true"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
             android:onClick="jogarClickHandler"
-            android:padding="0dp"
-            android:text="💬\u00A0JOGAR"
+            android:text="💬 JOGAR"
+            android:textSize="22sp"
             android:textStyle="bold"
-            tools:ignore="UnusedAttribute,VisualLintButtonSize" />
+            android:layout_marginBottom="16dp"/>
 
         <LinearLayout
-            android:id="@+id/jogarOnlineContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/btnInternet"
-                android:layout_width="120sp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:drawableStart="@drawable/baseline_wifi_24"
-                android:drawableLeft="@drawable/baseline_wifi_24"
-                android:onClick="internetButtonClickHandler"
-                android:paddingStart="16dp"
-                android:paddingLeft="16dp"
-                android:text="Internet"
-                android:visibility="gone" />
-
-
-            <Button
-                android:id="@+id/btnBluetooth"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:drawableStart="@drawable/baseline_bluetooth_24"
-                android:drawableLeft="@drawable/baseline_bluetooth_24"
-                android:minHeight="52dp"
-                android:onClick="bluetoothButtonClickHandler"
-                android:paddingEnd="20dp"
-                android:paddingRight="20dp"
-                android:text="Bluetooth" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="105dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnAjuda"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:drawableStart="@drawable/baseline_help_outline_24"
-                android:drawableLeft="@drawable/baseline_help_outline_24"
-                android:onClick="opcoesButtonClickHandler"
-                android:paddingStart="9sp"
-                android:paddingLeft="9sp"
-                android:text="Ajuda" />
+                android:text="Ajuda"
+                android:layout_marginEnd="4dp"/>
 
             <Button
                 android:id="@+id/btnSobre"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:drawableStart="@drawable/baseline_info_24"
-                android:drawableLeft="@drawable/baseline_info_24"
-                android:onClick="opcoesButtonClickHandler"
-                android:paddingStart="9sp"
-                android:paddingLeft="9sp"
-                android:text="Sobre" />
+                android:text="Sobre"
+                android:layout_marginHorizontal="4dp"/>
 
             <Button
                 android:id="@+id/btnOpcoes"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:drawableStart="@drawable/baseline_settings_24"
-                android:drawableLeft="@drawable/baseline_settings_24"
                 android:onClick="opcoesButtonClickHandler"
-                android:paddingStart="9sp"
-                android:paddingLeft="9sp"
-                android:text="Opções" />
-
+                android:text="Opções"
+                android:layout_marginStart="4dp"/>
         </LinearLayout>
-
     </LinearLayout>
-
 </LinearLayout>

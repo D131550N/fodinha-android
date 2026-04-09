@@ -13,11 +13,10 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,23 +36,32 @@ public class TrucoActivity extends Activity {
 
     public static final String BROADCAST_IDENTIFIER = "me.chester.minitruco.EVENTO_TRUCO_ACTIVITY";
     private static boolean mIsViva = false;
-    boolean partidaAbortada = false;
     JogadorHumano jogadorHumano;
     Partida partida;
     private MesaView mesa;
     Button btnNovaPartida;
 
+    // Componentes da Interface de Palpite
+    private LinearLayout layoutPalpite;
+    private Button btnMenosPalpite;
+    private Button btnMaisPalpite;
+    private Button btnConfirmaPalpite;
+    private TextView tvValorPalpite;
+    private int palpiteAtual = 0;
+    private int maxPalpite = 0;
+
     private SharedPreferences preferences;
     private Random random = new Random();
 
-    // Frases do Pica-Pau para Eliminação
+    // Novas Frases de Morte da Fodinha
     private final String[] FRASES_MORTE = {
-        "Adeus, tio Paulo!",
-        "Tchau, vovô e vovó!",
-        "Adeus, tia Titous!",
-        "Adeus, tia Net!",
-        "Fui pro saco!",
-        "Deu ruim!"
+        "Fui tapeado!",
+        "Vodu é pra jacu!",
+        "É pra lixo que eu vou!",
+        "Eu não vou embora!",
+        "Meus olhos!",
+        "Venci!", // (Irônico)
+        "Estupendo!"
     };
 
     public static boolean isViva() {
@@ -71,13 +79,20 @@ public class TrucoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.truco);
         EdgeToEdgeHelper.aplicaSystemBarInsets(this);
-        
+
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        
-        // Muitos elementos visuais de placar do Truco foram desativados no XML,
-        // mas pegamos o botão de reiniciar a partida que ainda é útil.
+
         btnNovaPartida = findViewById(R.id.btnNovaPartida);
         if(btnNovaPartida != null) btnNovaPartida.setVisibility(View.GONE);
+
+        // Instancia os botões da Caixa de Palpite
+        layoutPalpite = findViewById(R.id.layoutPalpite);
+        btnMenosPalpite = findViewById(R.id.btnMenosPalpite);
+        btnMaisPalpite = findViewById(R.id.btnMaisPalpite);
+        btnConfirmaPalpite = findViewById(R.id.btnConfirmaPalpite);
+        tvValorPalpite = findViewById(R.id.tvValorPalpite);
+
+        configuraBotoesPalpite();
 
         mesa = findViewById(R.id.MesaView01);
         mesa.setCorFundoCartaBalao(preferences.getInt("corFundoCarta", android.graphics.Color.WHITE));
@@ -99,9 +114,35 @@ public class TrucoActivity extends Activity {
         }).start();
     }
 
+    private void configuraBotoesPalpite() {
+        btnMaisPalpite.setOnClickListener(v -> {
+            if (palpiteAtual < maxPalpite) {
+                palpiteAtual++;
+                atualizaTextoPalpite();
+            }
+        });
+
+        btnMenosPalpite.setOnClickListener(v -> {
+            if (palpiteAtual > 0) {
+                palpiteAtual--;
+                atualizaTextoPalpite();
+            }
+        });
+
+        btnConfirmaPalpite.setOnClickListener(v -> {
+            if (partida != null && jogadorHumano != null) {
+                layoutPalpite.setVisibility(View.GONE); // Esconde a caixa
+                partida.fazPalpite(jogadorHumano, palpiteAtual); // Envia para o motor
+            }
+        });
+    }
+
+    private void atualizaTextoPalpite() {
+        tvValorPalpite.setText(String.valueOf(palpiteAtual));
+    }
+
     /**
-     * Recebe a notificação do Core e avisa a MesaView para redesenhar
-     * os nomes com a quantidade de vidas atualizada.
+     * Atualiza os nomes e as vidas redesenhando a mesa
      */
     public void atualizaVidasNaTela() {
         if (mesa != null) {
@@ -109,53 +150,30 @@ public class TrucoActivity extends Activity {
         }
     }
 
-    /**
-     * Tira a cor de destaque (já que não há mais placar por equipes)
-     */
+    public void atualizaPlacar(int pontosNos, int pontosEles) {
+        // Ignorado, placar não existe mais.
+    }
+
     public void tiraDestaqueDoPlacar() {
         // Ignorado na Fodinha
     }
 
     /**
-     * Abre uma janelinha perguntando quantas vidas o jogador quer apostar.
-     * Quando o jogador clica em OK, o palpite é enviado ao motor (Core).
+     * Chamado pelo Core quando é a vez do humano fazer o palpite.
+     * Nós exibimos a interface flutuante e travamos os botões + e -.
      */
     public void pedePalpite() {
         runOnUiThread(() -> {
-            // Cria um NumberPicker nativo do Android
-            final NumberPicker picker = new NumberPicker(this);
-            picker.setMinValue(0);
-            
-            // O máximo que ele pode apostar é a quantidade de cartas da rodada
-            int maxCartas = partida != null ? partida.getSituacaoJogo().quantidadeCartasRodada : 10;
-            picker.setMaxValue(maxCartas);
+            palpiteAtual = 0;
+            maxPalpite = partida != null ? partida.getSituacaoJogo().quantidadeCartasRodada : 10;
+            atualizaTextoPalpite();
 
-            // Tenta adivinhar um valor padrão no meio para facilitar
-            picker.setValue(0);
+            // Aqui futuramente colocaremos a Regra do Último!
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Fase de Palpites");
-            builder.setMessage("Quantas você faz nesta rodada?");
-            builder.setView(picker);
-            
-            // Impede que o jogador feche a janela clicando fora
-            builder.setCancelable(false);
-
-            builder.setPositiveButton("Confirmar", (dialog, which) -> {
-                int palpite = picker.getValue();
-                if (partida != null && jogadorHumano != null) {
-                    // Envia a resposta de volta ao Motor da Fodinha
-                    partida.fazPalpite(jogadorHumano, palpite);
-                }
-            });
-
-            builder.show();
+            layoutPalpite.setVisibility(View.VISIBLE);
         });
     }
 
-    /**
-     * Chamado pelo Core quando o jogo acaba.
-     */
     public void jogoFechado(int numVencedor) {
         runOnUiThread(() -> {
             String mensagem;
@@ -165,16 +183,13 @@ public class TrucoActivity extends Activity {
                 mensagem = "O jogador " + numVencedor + " venceu a partida!";
             }
             Toast.makeText(this, mensagem, Toast.LENGTH_LONG).show();
-            
+
             if (btnNovaPartida != null) {
                 btnNovaPartida.setVisibility(View.VISIBLE);
             }
         });
     }
 
-    /**
-     * Sorteia uma das frases do Pica-Pau para exibir quando alguém zera a vida
-     */
     public String getFraseMorte() {
         int indice = random.nextInt(FRASES_MORTE.length);
         return FRASES_MORTE[indice];
@@ -198,7 +213,6 @@ public class TrucoActivity extends Activity {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Na Fodinha não redesenhamos mais a barra de placar
     }
 
     @Override

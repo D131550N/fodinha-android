@@ -21,7 +21,7 @@ public abstract class Partida implements Runnable {
     /**
      * Total de jogadores na mesa (pode variar de 2 a 6)
      */
-    protected int numJogadores = 0;
+    public int numJogadores = 0; // <--- PORTA DESTRANCADA AQUI!
 
     /**
      * Jogadores adicionados a esta partida (índices de 1 a 6 são os válidos, o 0 é ignorado)
@@ -58,6 +58,24 @@ public abstract class Partida implements Runnable {
      * Indica se a partida foi finalizada.
      */
     public boolean finalizada = false;
+
+    // --- ADICIONADO AQUI PARA A MESA (FRONTEND) PODER LER O JOGO ---
+    protected SituacaoJogo situacaoFodinha = new SituacaoJogo();
+
+    public SituacaoJogo getSituacaoJogo() {
+        // Copia os dados reais e vivos do motor do jogo para a tela ler!
+        situacaoFodinha.quantidadeCartasRodada = this.quantidadeCartasRodada;
+
+        for (int i = 1; i <= 6; i++) {
+            situacaoFodinha.vidas[i] = this.vidas[i];
+            situacaoFodinha.palpites[i] = this.palpites[i];
+            situacaoFodinha.feitas[i] = this.feitas[i];
+            situacaoFodinha.eliminado[i] = this.eliminado[i];
+        }
+
+        return situacaoFodinha;
+    }
+    // ---------------------------------------------------------------
 
     public Partida(Modo modo) {
         this.modo = modo;
