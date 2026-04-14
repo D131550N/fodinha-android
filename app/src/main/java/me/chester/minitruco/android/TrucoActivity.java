@@ -56,12 +56,12 @@ public class TrucoActivity extends Activity {
     // Novas Frases de Morte da Fodinha
     private final String[] FRASES_MORTE = {
         "Fui tapeado!",
-        "Vodu é pra jacu!",
-        "É pra lixo que eu vou!",
-        "Eu não vou embora!",
-        "Meus olhos!",
-        "Venci!", // (Irônico)
-        "Estupendo!"
+        "Ainda bem que eu fiz a minha",
+        "Adeus tio Paulo",
+        "Adeus tia Beti",
+        "Isso foi pessoal!",
+        "Lascou!",
+        "Adeus, mundo cruel!"
     };
 
     public static boolean isViva() {

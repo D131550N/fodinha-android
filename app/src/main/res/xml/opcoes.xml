@@ -1,68 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="Perfil">
+        <EditTextPreference
+            android:key="nomeJogador"
+            android:title="Seu Nome"
+            android:summary="Nome usado nas partidas (Local, Bluetooth e Internet)"
+            android:defaultValue="Você" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="Visual">
+        <ListPreference
+            android:defaultValue="padrao"
+            android:entries="@array/estilo_cartas_nomes"
+            android:entryValues="@array/estilo_cartas_valores"
+            android:key="estiloFrenteCartas"
+            android:summary="Escolha o design da parte da frente das cartas"
+            android:title="Estilo do Baralho" />
+
         <me.chester.minitruco.android.BaralhoPreference
             android:defaultValue="0"
             android:key="indiceDesenhoCartaFechada"
             android:summary="Escolha o desenho atrás das cartas"
-            android:title="Baralho" />
+            android:title="Fundo das Cartas" />
+
         <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
             android:defaultValue="-1"
             android:key="corFundoCarta"
-            android:summary="Se o &quot;modo escuro&quot; do aparelho deixa estes elementos ilegíveis, ajuste aqui"
+            android:summary="Se o modo escuro do aparelho deixa ilegível, ajuste aqui"
             android:title="Cor de fundo das cartas e balões" />
+
         <ListPreference
             android:defaultValue="1"
             android:entries="@array/fonte_nomes"
             android:entryValues="@array/fonte_valores"
             android:key="escalaFonte"
-            android:summary="Aumente o tamanho da fonte dos balões, botões e perguntas do jogo"
+            android:summary="Aumente ou diminua o tamanho da fonte do jogo"
             android:title="Tamanho do Texto" />
+
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="animacaoRapida"
-            android:summary="Selecione para acelerar a distribuição, recolhimento e animação geral das cartas"
+            android:summary="Acelera a animação geral e distribuição das cartas"
             android:title="Animação Rápida" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Jogo">
+    <PreferenceCategory android:title="Sistema">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="sempreConfirmaFecharJogo"
-            android:summary="Pede confirmação antes de ceder uma partida em andamento."
+            android:summary="Pede confirmação antes de abandonar uma partida em andamento."
             android:title="Confirmar fechamento do jogo" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="humanoDecide"
-            android:summary="Em jogo local, se esta opção estiver ligada, o parceiro bot não pode aceitar truco ou mão de 10/11. Ele só diz se iria, mas o humano é que decide"
-            android:title="Humano decide pela dupla" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="limpaPlacarPartidas"
-            android:summary="Se esta opção estiver ligada, o placar de partidas sempre começa em 0 x 0. Senão, ele começa com o placar da última sessão."
-            android:title="Partidas começam em 0 x 0" />
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="semprePerguntarNome"
-            android:summary="Desligue para entrar direto no jogo via internet usando o último nome aceito ou um nome sugerido."
-            android:title="Perguntar nome no jogo internet" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Desenvolvimento (️☠=PRE-RI-GO, não mexa)">
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="servidorLocal"
-            android:summary="Usa o servidor local (hardcoded) ao invés do servidor do miniTruco"
-            android:title="Servidor de Desenvolvimento"/>
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="jogoAutomatico"
-            android:summary="Joga uma carta ou pede truco automaticamente (e aleatoriamente) apenas em jogo local"
-            android:title="Jogo Automático" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="valeUm"
-            android:summary="Ignora o modo selecionado e faz a partida valer um ponto só com a regra do Paulista"
-            android:title="Vale 1" />
-    </PreferenceCategory>
 </androidx.preference.PreferenceScreen>

@@ -53,18 +53,17 @@ public abstract class Partida implements Runnable {
      * caso o frontend original exija saber se há algo na mesa. Não afeta a regra da Fodinha.
      */
     public Carta cartaDaMesa;
-
-    /**
-     * Indica se a partida foi finalizada.
-     */
     public boolean finalizada = false;
 
-    // --- ADICIONADO AQUI PARA A MESA (FRONTEND) PODER LER O JOGO ---
+    // --- ADICIONADO PARA TODOS ENXERGAREM ---
+    public int maoAtual = 1;
+    public char manilha;
+
     protected SituacaoJogo situacaoFodinha = new SituacaoJogo();
 
     public SituacaoJogo getSituacaoJogo() {
-        // Copia os dados reais e vivos do motor do jogo para a tela ler!
         situacaoFodinha.quantidadeCartasRodada = this.quantidadeCartasRodada;
+        situacaoFodinha.numeroDaMao = this.maoAtual; // AGORA A TELA RECEBE A RODADA CERTA!
 
         for (int i = 1; i <= 6; i++) {
             situacaoFodinha.vidas[i] = this.vidas[i];
@@ -72,7 +71,6 @@ public abstract class Partida implements Runnable {
             situacaoFodinha.feitas[i] = this.feitas[i];
             situacaoFodinha.eliminado[i] = this.eliminado[i];
         }
-
         return situacaoFodinha;
     }
     // ---------------------------------------------------------------

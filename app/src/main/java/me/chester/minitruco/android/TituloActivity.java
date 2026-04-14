@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,12 +31,22 @@ public class TituloActivity extends SalaActivity {
         ((TextView) findViewById(R.id.versao_app)).setText("Fodinha v" + BuildConfig.VERSION_NAME);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        // --- PUXANDO AS REGRAS DO STRINGS.XML COM FORMATAÇÃO HTML ---
         findViewById(R.id.btnAjuda).setOnClickListener(v -> {
-            mostraAlertBox("Regras da Fodinha", "A primeira rodada começa com 1 carta. Você deve prometer quantas rodadas vai ganhar. Quem errar o palpite perde 1 vida.");
+            new AlertDialog.Builder(this)
+                .setTitle(R.string.titulo_instrucoes)
+                .setMessage(Html.fromHtml(getString(R.string.texto_instrucoes), Html.FROM_HTML_MODE_LEGACY))
+                .setPositiveButton("OK", null)
+                .show();
         });
 
+        // --- PUXANDO O SOBRE DO STRINGS.XML COM FORMATAÇÃO HTML ---
         findViewById(R.id.btnSobre).setOnClickListener(v -> {
-            mostraAlertBox("Sobre", "Modificação de Fodinha baseada no Minitruco de Chester.");
+            new AlertDialog.Builder(this)
+                .setTitle(R.string.titulo_sobre)
+                .setMessage(Html.fromHtml(getString(R.string.texto_sobre), Html.FROM_HTML_MODE_LEGACY))
+                .setPositiveButton("OK", null)
+                .show();
         });
     }
 
@@ -53,6 +64,12 @@ public class TituloActivity extends SalaActivity {
                 startActivity(intent);
             })
             .show();
+    }
+
+    public void bluetoothClickHandler(View v) {
+        // Inicia a atividade original de Bluetooth do projeto
+        Intent intent = new Intent(this, me.chester.minitruco.android.bluetooth.BluetoothActivity.class);
+        startActivity(intent);
     }
 
     public void opcoesButtonClickHandler(View v) {

@@ -18,6 +18,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.Vector;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import me.chester.minitruco.core.Carta;
 import me.chester.minitruco.core.Jogador;
@@ -52,12 +54,29 @@ public class MesaView extends View {
     private boolean visivel = false;
     private boolean[] jaGritouMorte = new boolean[7];
 
+    // --- FILA DE BALÕES (Mata o travamento!) ---
+    private class Balao {
+        String texto; int posicao; int tempo;
+        Balao(String t, int p, int tm) { texto=t; posicao=p; tempo=tm; }
+    }
+    private Queue<Balao> filaBaloes = new LinkedList<>();
+
     final Thread threadAnimacao = new Thread(() -> {
         int tempoEntreFramesAnimando = 1000 / FPS_ANIMANDO;
         int tempoEntreFramesParado = 1000 / FPS_PARADO;
         while (trucoActivity == null || trucoActivity.partida == null) sleep(200);
         while (!trucoActivity.isFinishing()) {
             if (visivel) postInvalidate();
+
+            // Puxa o próximo balão da fila se o atual já acabou (Fluidez perfeita)
+            if (System.currentTimeMillis() > mostraBalaoAte && !filaBaloes.isEmpty()) {
+                Balao b = filaBaloes.poll();
+                fraseBalao = b.texto.equals("morte") ? trucoActivity.getFraseMorte() : b.texto;
+                posicaoBalao = b.posicao;
+                mostraBalaoAte = System.currentTimeMillis() + b.tempo;
+                if (animandoAte < mostraBalaoAte) animandoAte = mostraBalaoAte;
+            }
+
             if (calcTempoAteFimAnimacaoMS() >= 0) sleep(tempoEntreFramesAnimando);
             else sleep(tempoEntreFramesParado);
         }
@@ -82,9 +101,9 @@ public class MesaView extends View {
     }
 
     public void aguardaFimAnimacoes() {
-        long msAteFim;
-        while ((msAteFim = animandoAte - System.currentTimeMillis()) > 0) {
-            try { Thread.sleep(msAteFim); } catch (InterruptedException e) { return; }
+        // Se a tela estiver fechando, quebra o loop na hora para não travar o app!
+        while ((animandoAte > System.currentTimeMillis() || !filaBaloes.isEmpty()) && !trucoActivity.isFinishing()) {
+            try { Thread.sleep(100); } catch (InterruptedException e) { return; }
         }
     }
 
@@ -112,11 +131,8 @@ public class MesaView extends View {
     }
 
     public void diz(String texto, int posicaoTela, int tempoMS) {
-        aguardaFimAnimacoes();
-        mostraBalaoAte = System.currentTimeMillis() + tempoMS;
-        fraseBalao = texto.equals("morte") ? trucoActivity.getFraseMorte() : texto;
-        posicaoBalao = posicaoTela;
-        notificaAnimacao(mostraBalaoAte);
+        // Não bloqueia mais a UI e o Canvas! Apenas joga na fila.
+        filaBaloes.add(new Balao(texto, posicaoTela, tempoMS));
     }
 
     @Override
@@ -153,7 +169,12 @@ public class MesaView extends View {
         recolheMao();
 
         if (trucoActivity.partida == null) return;
-        for(int i = 0; i < 7; i++) { jaGritouMorte[i] = false; ultimosPalpites[i] = -1; }
+
+        // Corrige o bug do fantasma! Só reseta a morte se for uma partida inteiramente nova.
+        if (trucoActivity.partida.getSituacaoJogo().numeroDaMao == 1) {
+            for(int i = 0; i < 7; i++) jaGritouMorte[i] = false;
+        }
+        for(int i = 0; i < 7; i++) ultimosPalpites[i] = -1;
 
         int totalCartas = trucoActivity.partida.getSituacaoJogo().quantidadeCartasRodada;
 
@@ -195,6 +216,16 @@ public class MesaView extends View {
 
     public void descarta(Carta c, int posTela) {
         aguardaFimAnimacoes();
+
+        // --- LIMPEZA INTELIGENTE DA MESA ---
+        if (trucoActivity.partida != null) {
+            int vivos = trucoActivity.partida.getJogadoresVivos();
+            if (cartasJogadas.size() >= vivos) {
+                for (CartaVisual cj : cartasJogadas) { cj.visible = false; }
+                cartasJogadas.clear();
+            }
+        }
+
         int offset = (posTela - 1) * 10;
         CartaVisual cv = null;
         for (int i = 0; i < 10; i++) {
@@ -232,17 +263,15 @@ public class MesaView extends View {
 
     private int calcPosTopCarta(int posTela, int numCarta) {
         int gap = CartaVisual.altura / 5;
-        int startY;
         switch (posTela) {
             case 1: return getHeight() - CartaVisual.altura - 10;
-            case 2: startY = (getHeight() * 3 / 4) - CartaVisual.altura; break;
-            case 3: startY = getHeight() / 4; break;
-            case 4: return 20 + (int) tamanhoFonte * 2;
-            case 5: startY = getHeight() / 4; break;
-            case 6: startY = (getHeight() * 3 / 4) - CartaVisual.altura; break;
+            case 4: return 20;
+            case 2: return (getHeight() / 2) - gap;
+            case 3: return (gap * 2);
+            case 5: return (gap * 2);
+            case 6: return (getHeight() / 2) - gap;
             default: return 0;
         }
-        return startY + (numCarta * gap);
     }
 
     private int calcPosLeftDescartada(int posTela) {
@@ -278,15 +307,17 @@ public class MesaView extends View {
         if (trucoActivity != null && trucoActivity.partida != null) {
             SituacaoJogo sit = trucoActivity.partida.getSituacaoJogo();
             for (int i = 1; i <= 6; i++) {
+                // Morte: O balão agora dura 2 segundos rápidos e vai pra fila!
                 if (sit.eliminado[i] && !jaGritouMorte[i]) {
                     Jogador j = trucoActivity.partida.getJogador(i);
-                    if (j != null) { diz("morte", trucoActivity.jogadorHumano.posicaoNaTela(j), 5000); jaGritouMorte[i] = true; }
+                    if (j != null) { diz("morte", trucoActivity.jogadorHumano.posicaoNaTela(j), 2000); jaGritouMorte[i] = true; }
                 }
+                // Palpite: balão de 1.5s pra ficar dinâmico
                 if (!sit.eliminado[i] && sit.faseJogo == 1 && sit.palpites[i] != -1 && ultimosPalpites[i] == -1) {
                     ultimosPalpites[i] = sit.palpites[i];
                     Jogador j = trucoActivity.partida.getJogador(i);
                     int posTela = trucoActivity.jogadorHumano.posicaoNaTela(j);
-                    if (posTela != 1) diz("Faço " + sit.palpites[i] + "!", posTela, 3000);
+                    if (posTela != 1) diz("Faço " + sit.palpites[i] + "!", posTela, 1500);
                 }
             }
         }
@@ -297,12 +328,11 @@ public class MesaView extends View {
         for (int i = 0; i < 60; i++) if (cartas[i] != null && cartas[i].visible && !cartasJogadas.contains(cartas[i])) cartas[i].draw(canvas);
         for (CartaVisual c : cartasJogadas) if (c.visible) c.draw(canvas);
 
-        desenhaIndicadorDeVez(canvas); // Estrela desenhada antes do texto pra não sobrepor letras
+        desenhaIndicadorDeVez(canvas);
         desenhaNomesEVidas(canvas);
         desenhaBalao(canvas);
     }
 
-    // --- FUNÇÃO AUXILIAR PARA TEXTO BONITO COM BORDA PRETA ---
     private void desenhaTextoComContorno(Canvas canvas, String texto, float x, float y, Paint paint) {
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
@@ -318,58 +348,48 @@ public class MesaView extends View {
         Paint paint = new Paint(); paint.setAntiAlias(true); paint.setTextSize(tamanhoFonte);
         SituacaoJogo sit = trucoActivity.partida.getSituacaoJogo();
 
-        // 1. DESENHA OS BOTS
         paint.setTextAlign(Align.CENTER);
         for (int i = 1; i <= 6; i++) {
             Jogador j = trucoActivity.partida.getJogador(i);
             if (j == null || sit.eliminado[i]) continue;
             int posTela = trucoActivity.jogadorHumano.posicaoNaTela(j);
 
-            if (posTela == 1) continue; // Pula o humano pra desenhar depois
+            if (posTela == 1) continue;
 
-            String linha1 = j.getNome();
-            String linha2 = "💖" + sit.vidas[i];
-            String linha3 = sit.palpites[i] != -1 ? "⚔️ " + sit.feitas[i] + "/" + sit.palpites[i] : "⚔️ -/-";
+            String linha1 = j.getNome().contains("unnamed") ? "Bot " + i : j.getNome();
+            String linha2 = "💖 " + sit.vidas[i];
+            String linha3 = "⚔️ " + (sit.palpites[i] != -1 ? sit.feitas[i] + "/" + sit.palpites[i] : "-/-");
 
             float x = calcPosLeftCarta(posTela, 0, 1) + (CartaVisual.largura / 2f);
-            float y = calcPosTopCarta(posTela, 0);
-
-            if (posTela == 6 || posTela == 2) y += CartaVisual.altura + tamanhoFonte + 10;
-            else y -= (tamanhoFonte * 2) + 30; // Distância da carta
+            float y = calcPosTopCarta(posTela, 0) + CartaVisual.altura + 25;
 
             desenhaTextoComContorno(canvas, linha1, x, y, paint);
             desenhaTextoComContorno(canvas, linha2, x, y + tamanhoFonte + 5, paint);
             desenhaTextoComContorno(canvas, linha3, x, y + (tamanhoFonte * 2) + 10, paint);
         }
 
-        // 2. DESENHA O HUMANO (Canto Direito Inferior)
         paint.setTextAlign(Align.RIGHT);
         int eu = trucoActivity.jogadorHumano.getPosicao();
-        String linhaVidas = "VIDAS: (💖" + sit.vidas[eu] + ")";
+        String linhaVidas = "VIDAS: 💖" + sit.vidas[eu];
         String linhaPalpite = "FAÇO: ⚔️ " + (sit.palpites[eu] != -1 ? sit.feitas[eu] + "/" + sit.palpites[eu] : "-/-");
         float pxDir = getWidth() - 20;
         float pyDir = getHeight() - (tamanhoFonte * 2) - 20;
         desenhaTextoComContorno(canvas, linhaVidas, pxDir, pyDir, paint);
         desenhaTextoComContorno(canvas, linhaPalpite, pxDir, pyDir + tamanhoFonte + 10, paint);
 
-        // 3. DESENHA A RODADA (Canto Esquerdo Inferior)
         paint.setTextAlign(Align.LEFT);
-        paint.setTextSize(tamanhoFonte * 0.9f);
-        String linhaRodada1 = "RODADA ATUAL:";
-        String linhaRodada2 = String.format("%02d", sit.numeroDaMao);
+        String linhaRodada = "RODADA " + String.format("%02d", sit.numeroDaMao);
         float pxEsq = 20;
-        float pyEsq = getHeight() - (tamanhoFonte * 2) - 20;
-        desenhaTextoComContorno(canvas, linhaRodada1, pxEsq, pyEsq, paint);
-        desenhaTextoComContorno(canvas, linhaRodada2, pxEsq, pyEsq + tamanhoFonte + 10, paint);
+        float pyEsq = getHeight() - tamanhoFonte - 20;
+        desenhaTextoComContorno(canvas, linhaRodada, pxEsq, pyEsq, paint);
     }
 
     private void desenhaIndicadorDeVez(Canvas canvas) {
         if (posicaoVez == 0) return;
-        Paint paintSeta = new Paint(); paintSeta.setTextAlign(Align.CENTER); paintSeta.setTextSize(CartaVisual.altura * 0.35f); // MENOR!
+        Paint paintSeta = new Paint(); paintSeta.setTextAlign(Align.CENTER); paintSeta.setTextSize(CartaVisual.altura * 0.3f);
 
-        // Agora a estrela crava exatamente no meio da carta!
         float x = calcPosLeftCarta(posicaoVez, 0, 1) + (CartaVisual.largura / 2f);
-        float y = calcPosTopCarta(posicaoVez, 0) + (CartaVisual.altura / 2f) + (CartaVisual.altura * 0.12f);
+        float y = calcPosTopCarta(posicaoVez, 0) + (CartaVisual.altura / 2f) + (CartaVisual.altura * 0.10f);
 
         canvas.drawText("⭐", x, y, paintSeta);
     }
@@ -385,7 +405,6 @@ public class MesaView extends View {
         float x = calcPosLeftCarta(posicaoBalao, 0, 1);
         float y = calcPosTopCarta(posicaoBalao, 0);
 
-        // Ajuste inteligente: o balão nasce DO LADO da carta, não em cima do nome!
         if (posicaoBalao == 2 || posicaoBalao == 3) {
             x -= (largBalao + 10);
             y += CartaVisual.altura / 4f;
@@ -395,7 +414,7 @@ public class MesaView extends View {
         } else if (posicaoBalao == 4) {
             x += CartaVisual.largura + 10;
             y += CartaVisual.altura / 4f;
-        } else { // Humano
+        } else {
             x += CartaVisual.largura + 10;
             y -= (altBalao - 20);
         }

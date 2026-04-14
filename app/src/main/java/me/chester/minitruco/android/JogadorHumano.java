@@ -3,6 +3,9 @@ package me.chester.minitruco.android;
 /* SPDX-License-Identifier: BSD-3-Clause */
 /* Modificado para o jogo Fodinha */
 
+import android.content.SharedPreferences;
+import androidx.preference.PreferenceManager;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +22,11 @@ public class JogadorHumano extends me.chester.minitruco.core.JogadorHumano {
     public JogadorHumano(TrucoActivity activity, MesaView mesa) {
         this.activity = activity;
         this.mesa = mesa;
-        this.setNome("Você"); // O fim do "unnamed"!
+
+        // --- PEGA O NOME QUE VOCÊ DIGITOU NAS OPÇÕES! ---
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        String meuNome = prefs.getString("nomeJogador", "Você"); // Se tiver vazio, usa "Você"
+        this.setNome(meuNome);
     }
 
     @Override
@@ -46,12 +53,10 @@ public class JogadorHumano extends me.chester.minitruco.core.JogadorHumano {
 
     @Override
     public void jogoAbortado(int posicao, int rndFrase) {
-        // Se alguém abandonou (posicao > 0), o motor core avisa
         if (posicao > 0 && mesa != null) {
-            // Converte a posição core para a posição visual de tela
             int posTela = convertePosicaoJogadorParaPosicaoTela(posicao);
-            mesa.diz("morte", posTela, 3000); // Grita a frase de morte NAQUELE LUGAR!
-            mesa.aguardaFimAnimacoes(); // Espera acabar a frase
+            mesa.diz("morte", posTela, 2000);
+            // REMOVIDO: mesa.aguardaFimAnimacoes(); -> Era isso que travava a sua tela!
         }
     }
 

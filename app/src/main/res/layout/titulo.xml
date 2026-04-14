@@ -8,7 +8,6 @@
     android:orientation="vertical"
     tools:ignore="RtlSymmetry,HardcodedText,UsingOnClickInXml">
 
-    <!-- O seu novo Logotipo de Madeira! -->
     <ImageView
         android:id="@+id/imgLogoFodinha"
         android:layout_width="match_parent"
@@ -18,7 +17,6 @@
         android:scaleType="fitCenter"
         android:src="@drawable/logo_fodinha" />
 
-    <!-- Informações de Versão e Créditos -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,7 +43,6 @@
             android:layout_marginTop="8dp" />
     </LinearLayout>
 
-    <!-- Botões -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,10 +52,20 @@
         <Button
             android:id="@+id/btnJogar"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="65dp"
             android:onClick="jogarClickHandler"
-            android:text="💬 JOGAR"
-            android:textSize="22sp"
+            android:text="👤 JOGAR LOCAL"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnBluetooth"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:onClick="bluetoothClickHandler"
+            android:text="🔵 BLUETOOTH"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:layout_marginBottom="16dp"/>
 

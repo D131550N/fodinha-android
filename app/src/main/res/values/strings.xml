@@ -3,6 +3,15 @@
     <!-- Nome do App (Como vai aparecer no celular e nas configurações) -->
     <string name="app_name">Fodinha</string>
 
+    <string-array name="estilo_cartas_nomes">
+        <item>Padrão (Francês)</item>
+        <item>Espanhol (Em breve)</item>
+    </string-array>
+    <string-array name="estilo_cartas_valores">
+        <item>padrao</item>
+        <item>espanhol</item>
+    </string-array>
+
     <!-- Frases dos Bots (Edição Pica-Pau) -->
     <string-array name="balao_vitoria">
         <item>E lá vamos nós!</item>
@@ -40,16 +49,21 @@
         Os jogadores começam com um número fixo de vidas. Quem acertar o palpite, mantém as vidas. Quem errar (fizer mais ou menos rodadas do que prometeu), perde uma vida. Quem chegar a zero vidas está eliminado! O último sobrevivente vence a partida.<br/><br/>
 
         <b><u>Força das Cartas e Manilhas</u></b><br/>
-        O jogo utiliza o baralho espanhol (sem 8 e 9). A força normal é: 3, 2, A, K, J, Q, 7, 6, 5, 4.<br/>
+        O jogo utiliza o baralho espanhol (sem 8 e 9). A força normal é: 3, 2, A, K, Q, J, 7, 6, 5, 4.<br/>
         Uma carta é virada na mesa (o "Vira"). As cartas seguintes a ela tornam-se as Manilhas, sendo as mais fortes do jogo, obedecendo a ordem de naipes: Paus (Zap) > Copas (Copeta) > Espadas (Espadilha) > Ouros (Pica-fumo).
     ]]></string>
 
-    <string name="titulo_sobre">Sobre a Fodinha</string>
+    <string name="titulo_sobre">Sobre o Jogo</string>
     <string name="texto_sobre"><![CDATA[
-        <b>Fodinha v0.0.1 beta</b><br/><br/>
-        Build por Dieisson 👨‍💻<br/>
-        Baseado no Minitruco de Chester.<br/><br/>
-        O miniTruco original é licenciado sob a licença BSD de 3 cláusulas. Todos os direitos originais reservados ao seu criador e contribuidores.<br/>
-        GitHub: https://github.com/chesterbr/minitruco-android
+        <b>Fodinha v0.0.1 beta</b><br/>
+        Build por Dieisson 👨‍💻<br/><br/>
+        Este jogo é um <i>fork</i> (modificação) do projeto de código aberto <b>miniTruco</b>.<br/><br/>
+        <b>miniTruco-android: Copyright (c) 2005-2023 Carlos Duarte do Nascimento (Chester)</b><br/>
+        Código-fonte original: https://github.com/chesterbr/minitruco-android<br/><br/>
+        <b>Licença BSD de 3 cláusulas:</b><br/>
+        A redistribuição e o uso nas formas binária e código fonte, com ou sem modificações, são permitidos contanto que as seguintes condições sejam cumpridas:<br/>
+        1. Redistribuições do código fonte devem conter o aviso de direitos autorais acima, esta lista de condições e o aviso de isenção de garantias subsequente.<br/>
+        2. Redistribuições na forma binária devem reproduzir o aviso de direitos autorais acima, na documentação fornecida com a distribuição.<br/>
+        3. O nome do autor não pode ser usado para endossar ou promover produtos derivados sem autorização prévia por escrito.
     ]]></string>
 </resources>
